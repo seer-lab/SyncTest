@@ -16,7 +16,7 @@ import java.util.Random;
 
 public class Main {
 
-    boolean less, more;
+    public boolean less, more;
 
     public Main() {
         less = false;
@@ -40,26 +40,15 @@ public class Main {
         PrintStream out=null;
 
         try {
-            if(in.length>0){
-                out = new PrintStream(new FileOutputStream(in[0]));
-                if(in.length == 1){ //the default value=little
-                    System.out.println("The default value is 2 accounts");
-                    ManageAccount.num = 2;
-                }
-
-                out.print("<Account program,");
-                if(in.length == 2){ //the concurrency is optional
-                    ManageAccount.num = Integer.parseInt(in[1]);
-                    System.out.println("Running program with " + in[1] + " accounts.");
-                } else { //more than 2 arguments
-                    if(in.length > 2){
-                        System.err.println("The program can accept only one or two arguments");
+            if(in.length > 0){
+                ManageAccount.num = 2;
+                if(in.length == 1){ //the concurrency is optional
+                    ManageAccount.num = Integer.parseInt(in[0]);
+                    System.out.println("Running program with " + in[0] + " accounts.");
+                } else if(in.length > 1){
+                        System.err.println("The program can accept only one argument");
                         System.exit(1);
-                    }
                 }
-            } else { //main's parameter is missing
-                System.out.println("The output file name is missing");
-                System.exit(1);
             }
 
             // System.out.println("The Initial values:");
@@ -104,9 +93,8 @@ public class Main {
                 System.out.println("<There is amount with less than 300, No Lock>");
             if((less == false)&&(more == false))
                 System.out.println("<All amounts are 300, None>");
-            out.close();
         } catch(Exception e){ //FileNotFound, Security
-           if(out!=null)out.close();
+           e.printStackTrace();
         }
 
     }//end of function main

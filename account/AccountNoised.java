@@ -25,7 +25,7 @@ class Account {
     }
 
     synchronized void withdraw (double money) {
-        //  System.out.println("Withdrawing "+money+" from account "+num);
+        // System.out.println("Withdrawing "+money+" from account "+num);
         if ((amount - money) < 0) System.out.println ("ERROR Insufficient funds for withdrawl");
 
         amount -= money;

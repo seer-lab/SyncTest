@@ -28,27 +28,27 @@ class Account {
     void transfer(Account ac, double mn) {
     //always start with the smaller account number to avoid deadlocks
     //as discussed in thesis meeting 10/08/2015
-        // System.out.println("Transferring "+mn+" from account "+num+" to account "+ac.num);
+        //System.out.println("Transferring "+mn+" from account "+num+" to account "+ac.num);
         if(amount - mn < 0) {
             System.out.println("ERROR - Insufficient funds for transfer"    );
             System.exit(1);
         }
 
-        if(ac.num < num) {
-            synchronized(ac) {
-                synchronized(this) {
+       if(ac.num < num) {
+           synchronized(ac) {
+               synchronized(this) {
                     amount -= mn;
                     ac.amount += mn;
-                }
-            }
-        } else {
-             synchronized(this) {
-                synchronized(ac) {
-                    amount -= mn;
-                    ac.amount += mn;
-                }
-            }
-        }
+               }
+           }
+       } else {
+            synchronized(this) {
+               synchronized(ac) {
+                   amount -= mn;
+                   ac.amount += mn;
+               }
+           }
+       }
     }
 
     synchronized void print(){
