@@ -1,0 +1,257 @@
+JUnit version 4.12
+.Running program with 100000 accounts.
+2015-11-12 18:17:18
+Full thread dump OpenJDK 64-Bit Server VM (25.66-b17 mixed mode):
+
+"Thread-51654" #51663 prio=5 os_prio=0 tid=0x00007f640c301800 nid=0x665c runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51653" #51662 prio=5 os_prio=0 tid=0x00007f640c2cf000 nid=0x665b runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51652" #51661 prio=5 os_prio=0 tid=0x00007f640c22e000 nid=0x665a runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51651" #51660 prio=5 os_prio=0 tid=0x00007f640c250800 nid=0x6659 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51650" #51659 prio=5 os_prio=0 tid=0x00007f640c244800 nid=0x6658 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51648" #51657 prio=5 os_prio=0 tid=0x00007f640c22a000 nid=0x6656 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51647" #51656 prio=5 os_prio=0 tid=0x00007f640c2ba800 nid=0x6655 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51646" #51655 prio=5 os_prio=0 tid=0x00007f640c242800 nid=0x6654 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51645" #51654 prio=5 os_prio=0 tid=0x00007f640c23e800 nid=0x6653 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51643" #51652 prio=5 os_prio=0 tid=0x00007f640c31a000 nid=0x6651 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51642" #51651 prio=5 os_prio=0 tid=0x00007f640c227000 nid=0x6650 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51641" #51650 prio=5 os_prio=0 tid=0x00007f640c26f000 nid=0x664f runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51640" #51649 prio=5 os_prio=0 tid=0x00007f640c1e0800 nid=0x664e runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51639" #51648 prio=5 os_prio=0 tid=0x00007f640c26d000 nid=0x664d runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51638" #51647 prio=5 os_prio=0 tid=0x00007f640c236800 nid=0x664c runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51637" #51646 prio=5 os_prio=0 tid=0x00007f640c21a800 nid=0x664b runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51636" #51645 prio=5 os_prio=0 tid=0x00007f640c200000 nid=0x664a runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51635" #51644 prio=5 os_prio=0 tid=0x00007f640c212000 nid=0x6649 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51634" #51643 prio=5 os_prio=0 tid=0x00007f640c254800 nid=0x6648 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51633" #51642 prio=5 os_prio=0 tid=0x00007f640c298800 nid=0x6647 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51631" #51640 prio=5 os_prio=0 tid=0x00007f640c2ed800 nid=0x6645 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51630" #51639 prio=5 os_prio=0 tid=0x00007f640c204000 nid=0x6644 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51628" #51637 prio=5 os_prio=0 tid=0x00007f640c322000 nid=0x6642 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51627" #51636 prio=5 os_prio=0 tid=0x00007f640c269000 nid=0x6641 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51626" #51635 prio=5 os_prio=0 tid=0x00007f640c1db000 nid=0x6640 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51625" #51634 prio=5 os_prio=0 tid=0x00007f640c24a800 nid=0x663f runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51624" #51633 prio=5 os_prio=0 tid=0x00007f640c1f3800 nid=0x663e runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51623" #51632 prio=5 os_prio=0 tid=0x00007f640c30c000 nid=0x663d runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51621" #51630 prio=5 os_prio=0 tid=0x00007f640c222800 nid=0x663b runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51607" #51616 prio=5 os_prio=0 tid=0x00007f640c32e800 nid=0x662c runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51606" #51615 prio=5 os_prio=0 tid=0x00007f640c288800 nid=0x662b runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51604" #51613 prio=5 os_prio=0 tid=0x00007f640c2a4800 nid=0x6629 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51603" #51612 prio=5 os_prio=0 tid=0x00007f640c330800 nid=0x6628 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51602" #51611 prio=5 os_prio=0 tid=0x00007f640c286800 nid=0x6627 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51601" #51610 prio=5 os_prio=0 tid=0x00007f640c248800 nid=0x6626 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51600" #51609 prio=5 os_prio=0 tid=0x00007f640c238000 nid=0x6625 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51596" #51605 prio=5 os_prio=0 tid=0x00007f640c2c7000 nid=0x6620 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51595" #51604 prio=5 os_prio=0 tid=0x00007f640c29e800 nid=0x661f runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51594" #51603 prio=5 os_prio=0 tid=0x00007f640c240800 nid=0x661e runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51593" #51602 prio=5 os_prio=0 tid=0x00007f640c29a800 nid=0x661d runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51592" #51601 prio=5 os_prio=0 tid=0x00007f640c21e000 nid=0x661c runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51591" #51600 prio=5 os_prio=0 tid=0x00007f640c246800 nid=0x661b runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51590" #51599 prio=5 os_prio=0 tid=0x00007f640c20d800 nid=0x661a runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51588" #51597 prio=5 os_prio=0 tid=0x00007f640c2b4800 nid=0x6618 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51587" #51596 prio=5 os_prio=0 tid=0x00007f640c2fb800 nid=0x6617 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51586" #51595 prio=5 os_prio=0 tid=0x00007f640c320000 nid=0x6616 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51585" #51594 prio=5 os_prio=0 tid=0x00007f640c2ff800 nid=0x6615 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51584" #51593 prio=5 os_prio=0 tid=0x00007f640c20b800 nid=0x6614 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51583" #51592 prio=5 os_prio=0 tid=0x00007f640c1f0000 nid=0x6613 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51581" #51590 prio=5 os_prio=0 tid=0x00007f640c279000 nid=0x6611 runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Thread-51578" #51587 prio=5 os_prio=0 tid=0x00007f640c24c800 nid=0x660e runnable [0x0000000000000000]
+   java.lang.Thread.State: TERMINATED
+
+"Service Thread" #8 daemon prio=9 os_prio=0 tid=0x00007f640c0cd800 nid=0x186c runnable [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C1 CompilerThread2" #7 daemon prio=9 os_prio=0 tid=0x00007f640c0b0000 nid=0x186b waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C2 CompilerThread1" #6 daemon prio=9 os_prio=0 tid=0x00007f640c0ae800 nid=0x186a waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C2 CompilerThread0" #5 daemon prio=9 os_prio=0 tid=0x00007f640c0ab800 nid=0x1869 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Signal Dispatcher" #4 daemon prio=9 os_prio=0 tid=0x00007f640c0a9000 nid=0x1868 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Finalizer" #3 daemon prio=8 os_prio=0 tid=0x00007f640c07e800 nid=0x1867 in Object.wait() [0x00007f63fc3f2000]
+   java.lang.Thread.State: WAITING (on object monitor)
+	at java.lang.Object.wait(Native Method)
+	- waiting on <0x00000000dc1256c0> (a java.lang.ref.ReferenceQueue$Lock)
+	at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:143)
+	- locked <0x00000000dc1256c0> (a java.lang.ref.ReferenceQueue$Lock)
+	at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:164)
+	at java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:209)
+
+"Reference Handler" #2 daemon prio=10 os_prio=0 tid=0x00007f640c07c800 nid=0x1866 in Object.wait() [0x00007f63fc4f3000]
+   java.lang.Thread.State: WAITING (on object monitor)
+	at java.lang.Object.wait(Native Method)
+	- waiting on <0x00000000dc125700> (a java.lang.ref.Reference$Lock)
+	at java.lang.Object.wait(Object.java:502)
+	at java.lang.ref.Reference$ReferenceHandler.run(Reference.java:157)
+	- locked <0x00000000dc125700> (a java.lang.ref.Reference$Lock)
+
+"main" #1 prio=5 os_prio=0 tid=0x00007f640c009800 nid=0x1860 runnable [0x00007f6415895000]
+   java.lang.Thread.State: RUNNABLE
+	at java.lang.Thread.start0(Native Method)
+	at java.lang.Thread.start(Thread.java:714)
+	- locked <0x0000000089094508> (a account.ManageAccount)
+	at account.Main.Runner(Main.java:69)
+	at account.tests.Test100K.test100K(Test100K.java:11)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.junit.runners.Suite.runChild(Suite.java:128)
+	at org.junit.runners.Suite.runChild(Suite.java:27)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+	at org.junit.runner.JUnitCore.runMain(JUnitCore.java:77)
+	at org.junit.runner.JUnitCore.main(JUnitCore.java:36)
+
+"VM Thread" os_prio=0 tid=0x00007f640c077800 nid=0x1865 runnable 
+
+"GC task thread#0 (ParallelGC)" os_prio=0 tid=0x00007f640c01f000 nid=0x1861 runnable 
+
+"GC task thread#1 (ParallelGC)" os_prio=0 tid=0x00007f640c020800 nid=0x1862 runnable 
+
+"GC task thread#2 (ParallelGC)" os_prio=0 tid=0x00007f640c022800 nid=0x1863 runnable 
+
+"GC task thread#3 (ParallelGC)" os_prio=0 tid=0x00007f640c024800 nid=0x1864 runnable 
+
+"VM Periodic Task Thread" os_prio=0 tid=0x00007f640c0d0000 nid=0x186d waiting on condition 
+
+JNI global references: 16
+
+Heap
+ PSYoungGen      total 66560K, used 29572K [0x00000000d8000000, 0x00000000dc600000, 0x0000000100000000)
+  eden space 61440K, 39% used [0x00000000d8000000,0x00000000d97e5e40,0x00000000dbc00000)
+  from space 5120K, 99% used [0x00000000dc100000,0x00000000dc5fb540,0x00000000dc600000)
+  to   space 5120K, 0% used [0x00000000dbc00000,0x00000000dbc00000,0x00000000dc100000)
+ ParOldGen       total 81920K, used 39256K [0x0000000088000000, 0x000000008d000000, 0x00000000d8000000)
+  object space 81920K, 47% used [0x0000000088000000,0x000000008a656118,0x000000008d000000)
+ Metaspace       used 4362K, capacity 4966K, committed 5248K, reserved 1056768K
+  class space    used 505K, capacity 529K, committed 640K, reserved 1048576K
+
+<All amounts are 300, None>
+
+Time: 3.342
+
+OK (1 test)
+

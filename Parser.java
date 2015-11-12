@@ -3,10 +3,14 @@ import java.util.regex.*;
 
 public class Parser {
 	public static void main(String[] args) {
-		Pattern p0 = Pattern.compile("OK");
-		Pattern p1 = Pattern.compile("Failures");
+		Pattern pass = Pattern.compile("OK");
+		Pattern fail = Pattern.compile("Failures");
+		Pattern err = Pattern.compile("(?d)[)] test");
+		Pattern assrt = Pattern.compile("at account.tests.Test(.*).test(.*)[(]Test(.*).java:(.*)[)]");
+		String errors = "";
 
-		int c0 = 0; int c1 = 0;
+		int passCount = 0;
+		int failCount = 0;
         int testsRun = Integer.parseInt(args[1]);
 
 		try {
@@ -15,21 +19,51 @@ public class Parser {
 			String line;
 
 			while((line = br.readLine()) != null) {
-				Matcher m0 = p0.matcher(line);
-				Matcher m1 = p1.matcher(line);
+				Matcher m0 = pass.matcher(line);
+				Matcher m1 = fail.matcher(line);
+				Matcher m2 = err.matcher(line);
+				Matcher m3 = assrt.matcher(line);
 
 				while(m0.find()) {
-					c0++;
+					passCount++;
 				}
 
 				while(m1.find()) {
-					c1++;
+					failCount++;
 				}
+
+				while(m2.find()) {
+					errors += "\n" + (failCount+1) + ")" + br.readLine();
+				}
+
+				// while(m3.find()) {
+				// 	//open test file
+				// 	File testFile = new File("account/tests/Test"+m3.group(1)+".java");
+				// 	BufferedReader testBR = new BufferedReader(new FileReader(testFile));
+				// 	//go to the line where the error is
+				// 	for(int i = 0; i < Integer.parseInt(m3.group(4)); i ++) {
+				// 		line = testBR.readLine();
+				// 	}
+				// 	//get rid of extra spaces
+				// 	line = line.replaceAll(" ", "");
+				// 	//print line to terminal
+				// 	errors += " @ Test"+m3.group(1)+".java line "+m3.group(4)+"\n\t| " + line + "\n";
+				// }
 
 			}
 
-            double percent = ((double) c0/(double) testsRun)*100;
-            System.out.println(c0 + "/" + c1 + "/" + testsRun + " -- " + percent + "%");
+            double percent = ((double) passCount/(double) testsRun)*100;
+			System.out.println(" Tests Run:\t" + testsRun);
+			System.out.println("    Passed:\t" + passCount);
+			System.out.println("    Failed:\t" + failCount);
+			System.out.println("Deadlocked:\t" + (testsRun - (failCount+passCount)));
+
+			if(failCount > 0) {
+				System.out.println("------");
+				System.out.println("ERRORS");
+				System.out.println("------");
+				System.out.println(errors);
+			}
 
             br.close();
 		} catch (Exception e) {

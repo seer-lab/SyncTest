@@ -1,31 +1,52 @@
 #!/bin/bash
 
-#build all source and tests
-javac -cp junit-4.12.jar account/*.java account/tests/*.java
+# build all source and tests
+javac -cp junit-4.12.jar account/*.java account/tests/*.java Parser.java
 
-#remove previous output files
-rm account/out/*.txt
-
-TESTS="Test10 Test100 Test1K Test10K Test100K"
-# TESTS="Test10 Test100"
+TESTS="Test2 Test10 Test100 Test1K Test10K Test100K"
 
 for t in $TESTS
 do
-    echo -n "Running $t... "
+    echo "Running $t... "
     for i in $(seq 1 $1)
     do
-        java -cp junit-4.12.jar:hamcrest-core-1.3.jar:. org.junit.runner.JUnitCore account.tests.$t >> account/out/$t.txt
+        echo -n "Execution $i: "
+
+        # start deadlock detection script
+        csh checkDeadlock.sh $t account/out/$t/$t-$i.txt &
+
+        # run test and append output to text file
+        java -cp junit-4.12.jar:hamcrest-core-1.3.jar:. org.junit.runner.JUnitCore account.tests.$t > account/out/$t/$t-$i.txt
+
+        # print status of each test
+        if (grep --quiet OK account/out/$t/$t-$i.txt) then
+            echo "Passed"
+        elif (grep --quiet deadlock account/out/$t/$t-$i.txt) then
+            echo -n "" # pkill will print "Killed" so we do nothing here
+        else
+            echo "Failed"
+        fi
+
+        pkill -KILL -f checkDeadlock.sh
     done
     echo "Done!"
-    notify-send --urgency=critical "$t has finished."
 done
 
-echo "\n----STATS----\n"
+# remove the old files so we don't confuse the parser
+rm account/out/Test*/Test*-all.txt
 
-javac Parser.java
+# Combine all text files into one for the parser
 for t in $TESTS
 do
-    java Parser account/out/$t.txt $i
+    for i in $(seq 1 $i)
+    do
+        cat account/out/$t/$t-$i.txt >> account/out/$t/$t-all.txt
+    done
 done
 
-notify-send --urgency=critical "runTests.sh has finished!"
+for t in $TESTS
+do
+    echo "\n======$t======"
+    #parses the output and prints info to the terminal
+    java Parser account/out/$t/$t-all.txt $i
+done

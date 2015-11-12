@@ -25,7 +25,7 @@ class Account {
         amount -= money;
     }
 
-    void transfer(Account ac, double mn) {
+    synchronized void transfer(Account ac, double mn) {
     //always start with the smaller account number to avoid deadlocks
     //as discussed in thesis meeting 10/08/2015
         //System.out.println("Transferring "+mn+" from account "+num+" to account "+ac.num);
