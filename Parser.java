@@ -36,19 +36,19 @@ public class Parser {
 					errors += "\n" + (failCount+1) + ")" + br.readLine();
 				}
 
-				// while(m3.find()) {
-				// 	//open test file
-				// 	File testFile = new File("account/tests/Test"+m3.group(1)+".java");
-				// 	BufferedReader testBR = new BufferedReader(new FileReader(testFile));
-				// 	//go to the line where the error is
-				// 	for(int i = 0; i < Integer.parseInt(m3.group(4)); i ++) {
-				// 		line = testBR.readLine();
-				// 	}
-				// 	//get rid of extra spaces
-				// 	line = line.replaceAll(" ", "");
-				// 	//print line to terminal
-				// 	errors += " @ Test"+m3.group(1)+".java line "+m3.group(4)+"\n\t| " + line + "\n";
-				// }
+				while(m3.find()) {
+					//open test file
+					File testFile = new File("account/tests/Test"+m3.group(1)+".java");
+					BufferedReader testBR = new BufferedReader(new FileReader(testFile));
+					//go to the line where the error is
+					for(int i = 0; i < Integer.parseInt(m3.group(4)); i ++) {
+						line = testBR.readLine();
+					}
+					//get rid of extra spaces
+					line = line.replaceAll(" ", "");
+					//print line to terminal
+					errors += " @ Test"+m3.group(1)+".java:"+m3.group(4)+"\n  " + line + "\n";
+				}
 
 			}
 
@@ -59,9 +59,7 @@ public class Parser {
 			System.out.println("Deadlocked:\t" + (testsRun - (failCount+passCount)));
 
 			if(failCount > 0) {
-				System.out.println("------");
-				System.out.println("ERRORS");
-				System.out.println("------");
+				System.out.println("=====ERRORS=====");
 				System.out.println(errors);
 			}
 

@@ -9,7 +9,7 @@ clean:
 
 purge:
 	rm account/*.class account/tests/*.class Parser.class
-	rm account/out/Test*/*.txt account/out/Test*/*.txt.grep
+	rm account/out/Test*/Test*.txt account/out/Test*/*.txt.grep
 
 test:
 	sh runTests.sh 50
