@@ -1,0 +1,8 @@
+JUnit version 4.12
+.Running program with 10 accounts.
+<All amounts are 300, None>
+
+Time: 0.005
+
+OK (1 test)
+

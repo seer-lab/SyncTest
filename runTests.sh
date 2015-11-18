@@ -3,7 +3,7 @@
 # build all source and tests
 javac -cp junit-4.12.jar account/*.java account/tests/*.java Parser.java
 
-TESTS="Test2"
+TESTS="Test2 Test10 Test100 Test1K Test10K Test100K"
 
 for t in $TESTS
 do
@@ -33,14 +33,14 @@ do
 done
 
 # remove the old files so we don't confuse the parser
-rm account/out/Test*-all.txt
+rm account/out/*/*-all.txt
 
 # Combine all text files into one for the parser
 for t in $TESTS
 do
     for i in $(seq 1 $i)
     do
-        cat account/out/$t/$t-$i.txt >> account/out/$t-all.txt
+        cat account/out/$t/$t-$i.txt >> account/out/$t/$t-all.txt
     done
 done
 
@@ -48,5 +48,5 @@ for t in $TESTS
 do
     echo "\n======$t======"
     #parses the output and prints info to the terminal
-    java Parser account/out/$t-all.txt $i
+    java Parser account/out/$t/$t-all.txt $i
 done
