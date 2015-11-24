@@ -1,4 +1,4 @@
-package account;
+package account.src;
 import java.io.*;
 import java.lang.StringBuilder;
 import java.util.Random;

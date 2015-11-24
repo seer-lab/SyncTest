@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 public class Test100K {
     @Test
     public void test100K() {
-        account.Main m = new account.Main();
+        account.src.Main m = new account.src.Main();
         m.Runner(new String[] {"100000"});
         assertTrue((m.less==false)&&(m.more==false));
     }

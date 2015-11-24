@@ -1,0 +1,7 @@
+JUnit version 4.12
+.Testing XtangoAnimator
+XtangoAnimator: Push the Start button
+DONE!
+<XtangoAnimator, finished, None>
+
+XtangoAnimator: Push the Close or Quit button

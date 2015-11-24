@@ -1,4 +1,4 @@
-package account;
+package account.src;
 
 /*
  * Title:        Software Testing course

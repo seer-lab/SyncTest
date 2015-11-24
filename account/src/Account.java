@@ -1,4 +1,4 @@
-package account;
+package account.src;
 
 class Account {
     double amount;  //the money in the account
