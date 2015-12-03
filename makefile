@@ -8,7 +8,7 @@ clean-account:
 	rm account/src/*.class account/tests/*.class Parser.class
 
 purge-account:
-	rm account/*.class account/tests/*.class Parser.class
+	rm account/src/*.class account/tests/*.class Parser.class
 	rm account/out/*.txt account/out/*.txt.grep
 
 

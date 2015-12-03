@@ -6,6 +6,8 @@ if [ "$#" -ne 4 ]; then
     exit
 fi
 
+# TODO input checking
+
 PATH_TO_SRC=$1
 PATH_TO_TST=$2
 PATH_TO_OUT=$3
