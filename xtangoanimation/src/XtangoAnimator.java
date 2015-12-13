@@ -1150,10 +1150,10 @@ class Cmove
      * that an asynchronous move followed closely by a move of the same icon
      * does not interleave.
      */
-    synchronized (icon.position) { // for ASYNC move, there may be
+    synchronized (icon.position) {  // for ASYNC move, there may be
       Position p = icon.position(); // a race condition locking
-      if (moveMode == RELATIVE) { // the position with another
-        xpos = (xdelta + p.x); // move of same icon next
+      if (moveMode == RELATIVE) {   // the position with another
+        xpos = (xdelta + p.x);      // move of same icon next
         ypos = (ydelta + p.y);
       }
       else if (moveMode == ICON) {
