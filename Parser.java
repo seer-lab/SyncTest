@@ -11,7 +11,7 @@ public class Parser {
 
 		int passCount = 0;
 		int failCount = 0;
-        int testsRun = Integer.parseInt(args[1]);
+    	int testsRun = Integer.parseInt(args[1]);
 
 		try {
 			File file = new File(args[0]);
@@ -52,7 +52,7 @@ public class Parser {
 
 			}
 
-            double percent = ((double) passCount/(double) testsRun)*100;
+      	double percent = ((double) passCount/(double) testsRun)*100;
 			System.out.println(" Tests Run:\t" + testsRun);
 			System.out.println("    Passed:\t" + passCount);
 			System.out.println("    Failed:\t" + failCount);
@@ -63,7 +63,7 @@ public class Parser {
 				System.out.println(errors);
 			}
 
-            br.close();
+      	br.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

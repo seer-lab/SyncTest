@@ -1,42 +1,7 @@
-#!/bin/bash
-
-
-# This is the main file for Synctest
-# syncTest.sh takes four arguments:
-#     1. The path to the source files
-#     2. The path to the test files
-#     3. The path to the output directory, and
-#     4. The number of times to run each test
-#
-# Currently the script requires that paths DO NOT end with '/' but I plan to change this
-
-if [ "$#" -ne 4 ]; then
-  echo -e "\nUsage: sh syncTest.sh path/to/src path/to/tests path/to/output loopCount\n"
-  exit
-fi
-
 PATH_TO_SRC=$1
 PATH_TO_TST=$2
 PATH_TO_OUT=$3
 LOOP_COUNT=$4
-
-# check for java source files
-if(!(ls $PATH_TO_SRC | grep --quiet java)) then
-  echo -e "\nError: $PATH_TO_SRC does not contain java files!\n"
-  exit
-fi
-
-# check for java test files
-if(!(ls $PATH_TO_TST | grep --quiet java)) then
-  echo -e "\nError: $PATH_TO_TST does not contain java files!\n"
-  exit
-fi
-
-# check if output directory exists
-if [ ! -d "$PATH_TO_OUT" ]; then
-  echo -e "\nError: $PATH_TO_OUT does not exist!\n"
-  exit
-fi
 
 echo "-----------VARS-----------"
 echo "PATH_TO_SRC: $PATH_TO_SRC"
