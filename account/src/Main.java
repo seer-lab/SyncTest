@@ -17,16 +17,17 @@ import java.util.Random;
 public class Main {
 
     public boolean less, more;
+    Random rnd;
 
     public Main() {
         less = false;
         more = false;
+        rnd = new Random();
     }
 
     protected String randStr() {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         StringBuilder bld = new StringBuilder();
-        Random rnd = new Random();
         while (bld.length() < 5) {
             int index = (int)(rnd.nextFloat() * chars.length());
             bld.append(chars.charAt(index));
@@ -60,7 +61,12 @@ public class Main {
             }
 
             for(int j = 0; j < ManageAccount.num; j++) {
-                bank[j] = new ManageAccount(accountName[j], 100, j);
+                if(rnd.nextBoolean() && j == 0) {
+                    // chance to create a test failure
+                    bank[j] = new ManageAccount(accountName[j], 99, j);
+                } else {
+                    bank[j] = new ManageAccount(accountName[j], 100, j);
+                }
                 // ManageAccount.accounts[j].print();
             }
 

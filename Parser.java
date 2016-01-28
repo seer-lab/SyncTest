@@ -58,10 +58,10 @@ public class Parser {
 			System.out.println("    Failed:\t" + failCount);
 			System.out.println("Deadlocked:\t" + (testsRun - (failCount+passCount)));
 
-			if(failCount > 0) {
-				System.out.println("=====ERRORS=====");
-				System.out.println(errors);
-			}
+//			if(failCount > 0) {
+//				System.out.println("=====ERRORS=====");
+//				System.out.println(errors);
+//			}
 
       	br.close();
 		} catch (Exception e) {

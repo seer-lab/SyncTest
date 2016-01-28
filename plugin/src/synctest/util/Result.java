@@ -1,8 +1,8 @@
 package synctest.util;
 
 public class Result {
-	String name;
-	int pass, fail, error, deadlock, total;
+	private String name;
+	private int pass, fail, error, deadlock, total;
 	
 	public Result(String name, int pass, int fail, int error, int deadlock, int total) {
 		this.name = name;

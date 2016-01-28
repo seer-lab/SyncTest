@@ -14,15 +14,11 @@ class Account {
 
     //functions
     synchronized void deposit(double money) {
-        // System.out.println("Depositing "+money+" to account "+num);
         amount += money;
     }
 
     synchronized void withdraw(double money) {
-        //  System.out.println("Withdrawing "+money+" from account "+num);
-        if((amount - money) < 0)
-            System.out.println("ERROR Insufficient funds for withdrawl");
-        amount -= money;
+        amount -= money;   
     }
 
     synchronized void transfer(Account ac, double mn) {

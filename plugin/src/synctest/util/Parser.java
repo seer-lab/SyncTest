@@ -8,8 +8,15 @@ import java.util.regex.Pattern;
 
 public class Parser {
 	Result result;
+	File file;
+	int testsRun;
 	
-	public Result parse(String[] args) {
+	public Parser(File file, int testsRun) {
+		this.file = file;
+		this.testsRun = testsRun;
+	}
+	
+	public Result parse() {
 		Pattern pass = Pattern.compile("OK");
 		Pattern fail = Pattern.compile("Failures");
 		Pattern err = Pattern.compile("(?d)[)] test");
@@ -20,10 +27,8 @@ public class Parser {
 		int passCount = 0;
 		int failCount = 0;
 		int deadCount = 0;
-    	int testsRun = Integer.parseInt(args[1]);
 
 		try {
-			File file = new File(args[0]);
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			String line;
 
@@ -66,7 +71,8 @@ public class Parser {
 
 			}
 			
-			int errCount = testsRun - passCount - failCount - deadCount;
+			int errCount = 0;
+			//int errCount = testsRun - passCount - failCount - deadCount;
 			
 
 			result = new Result(file.toString(), passCount, failCount, errCount, deadCount, testsRun);

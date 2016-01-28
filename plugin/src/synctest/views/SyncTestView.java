@@ -9,6 +9,7 @@ import synctest.util.Result;
 
 import org.eclipse.ui.ISharedImages;
 
+import java.io.File;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
@@ -26,7 +27,7 @@ public class SyncTestView extends ViewPart {
 	
 	private double pass = 0, fail = 0, error = 0, dead = 0, total = 0;
 
-	private Vector<Result> results = new Vector<Result>();
+	private Vector<Result> results = runner.getResults();
 	private Result selection = new Result();
 	
 	IWorkbench 		workbench 	= PlatformUI.getWorkbench();
@@ -40,7 +41,7 @@ public class SyncTestView extends ViewPart {
     GridData 		gridData;
     GridLayout 		gridLayout;
     
-    Text 			sourceDir, testDir, outputDir;
+    Text 			baseDir, sourceDir, testDir, outputDir;
     
     Text 			sleepAmnt, testCountAmnt;
     Scale 			threshold;
@@ -50,11 +51,9 @@ public class SyncTestView extends ViewPart {
     //TESTING TAB
     ToolBar 		toolbar;
     ToolItem 		item, item2, item3, item4, item5, item6;
-    ProgressBar 	progress;
-    Text 			passAmnt;
-    Text 			failAmnt;
-    Text 			errAmnt;
-    Text 			deadAmnt;
+    ProgressBar 	progress, execProgress;
+    Text 			passAmnt, failAmnt, errAmnt, deadAmnt;
+    boolean			passAmntIsFraction = false, failAmntIsFraction = false, errAmntIsFraction = false, deadAmntIsFraction = false;
     
     Canvas 			canvas;
     Canvas 			detailCanvas;
@@ -63,7 +62,7 @@ public class SyncTestView extends ViewPart {
     
     ToolBar 		toolbar2;
     ToolItem 		item7, item8, item9;
-    Tree 			fail_results;
+    Tree 			failureTree;
     
     Button 			run;
 
@@ -103,22 +102,62 @@ public class SyncTestView extends ViewPart {
 		folders.setLayoutData(gridData);
 		folders.setLayout(new GridLayout(2, false));
 		
-		Button setSourceDir = new Button(folders, SWT.PUSH);
+		baseDir = new Text(folders, SWT.NONE);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		baseDir.setLayoutData(gridData);
+		baseDir.setMessage("Select the project base directory");
+		
+		Button setBaseDir = new Button(folders, SWT.PUSH);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-		setSourceDir.setLayoutData(gridData);
-		setSourceDir.setText("Set Source Directory");
+		setBaseDir.setLayoutData(gridData);
+		setBaseDir.setText("  ...  ");
+		
+		Button findDirs = new Button(folders, SWT.CHECK);
+		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+		gridData.horizontalSpan = 2;
+		findDirs.setLayoutData(gridData);
+		findDirs.setText("Automatically find souce and test directories");
+		
+		setBaseDir.addListener(SWT.Selection, new Listener() {
+		      public void handleEvent(Event e) {
+		        switch (e.type) {
+		        case SWT.Selection:
+		            DirectoryDialog dialog = new DirectoryDialog( PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN );
+		            dialog.setMessage("Select the base directory for your project");
+		            
+		            if(System.getProperty("os.name").equals("Linux")) {
+		            	dialog.setFilterPath("/home");
+		            }
+		            
+		            String path = dialog.open();
+		            baseDir.setText(path);
+		            if(findDirs.getSelection() == true) importDirs(path);
+		          break;
+		        }
+		      }
+		    });
+		
+		Label seperator = new Label(folders, SWT.SEPARATOR | SWT.HORIZONTAL);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalSpan = 2;
+		seperator.setLayoutData(gridData);
 		
 		sourceDir = new Text(folders, SWT.NONE);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		sourceDir.setLayoutData(gridData);
-		sourceDir.setText("/home/katarn/Documents/synctest/account/src");
+		sourceDir.setMessage("Select the directory containing source code");
+		
+		Button setSourceDir = new Button(folders, SWT.PUSH);
+		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		setSourceDir.setLayoutData(gridData);
+		setSourceDir.setText("  ...  ");
 	    
 	    setSourceDir.addListener(SWT.Selection, new Listener() {
 		      public void handleEvent(Event e) {
 		        switch (e.type) {
 		        case SWT.Selection:
 		            DirectoryDialog dialog = new DirectoryDialog( PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN );
-		            dialog.setMessage("Select the directory containing your source files");
+		            dialog.setMessage("Select the directory containing project source files");
 		            
 		            if(System.getProperty("os.name").equals("Linux")) {
 		            	dialog.setFilterPath("/home");
@@ -128,16 +167,16 @@ public class SyncTestView extends ViewPart {
 		        }
 		      }
 		    });
-	    
-	    Button setTestDir = new Button(folders, SWT.PUSH);
-		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-		setTestDir.setLayoutData(gridData);
-		setTestDir.setText("Set Test Directory");
 		
 		testDir = new Text(folders, SWT.NONE);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		testDir.setLayoutData(gridData);
-		testDir.setText("/home/katarn/Documents/synctest/account/tests");
+		testDir.setMessage("Select the directory containing junit tests");
+		
+		Button setTestDir = new Button(folders, SWT.PUSH);
+		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		setTestDir.setLayoutData(gridData);
+		setTestDir.setText("  ...  ");
 		
 		setTestDir.addListener(SWT.Selection, new Listener() {
 		      public void handleEvent(Event e) {
@@ -154,32 +193,32 @@ public class SyncTestView extends ViewPart {
 		        }
 		      }
 		    });
-	    
-	    Button setOutputDir = new Button(folders, SWT.PUSH);
-		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-		setOutputDir.setLayoutData(gridData);
-		setOutputDir.setText("Set Output Directory");
 		
-		outputDir = new Text(folders, SWT.NONE);
-		gridData = new GridData(GridData.FILL_HORIZONTAL);
-		outputDir.setLayoutData(gridData);
-		outputDir.setText("/home/katarn/Documents/synctest/account/out");
-		
-		setOutputDir.addListener(SWT.Selection, new Listener() {
-		      public void handleEvent(Event e) {
-		        switch (e.type) {
-		        case SWT.Selection:
-		            DirectoryDialog dialog = new DirectoryDialog( PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN );
-		            dialog.setMessage("Select the directory to place the output files");
-		            
-		            if(System.getProperty("os.name").equals("Linux")) {
-		            	dialog.setFilterPath("/home");
-		            }
-		            sourceDir.setText(dialog.open());
-		          break;
-		        }
-		      }
-		    });
+//		outputDir = new Text(folders, SWT.NONE);
+//		gridData = new GridData(GridData.FILL_HORIZONTAL);
+//		outputDir.setLayoutData(gridData);
+//		outputDir.setMessage("Select the directory for output files");
+//		
+//		Button setOutputDir = new Button(folders, SWT.PUSH);
+//		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+//		setOutputDir.setLayoutData(gridData);
+//		setOutputDir.setText("  ...  ");
+//		
+//		setOutputDir.addListener(SWT.Selection, new Listener() {
+//		      public void handleEvent(Event e) {
+//		        switch (e.type) {
+//		        case SWT.Selection:
+//		            DirectoryDialog dialog = new DirectoryDialog( PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN );
+//		            dialog.setMessage("Select the directory to place the output files");
+//		            
+//		            if(System.getProperty("os.name").equals("Linux")) {
+//		            	dialog.setFilterPath("/home");
+//		            }
+//		            sourceDir.setText(dialog.open());
+//		          break;
+//		        }
+//		      }
+//		    });
 		
 	    /**************************************************************************************************/
 	    
@@ -316,7 +355,7 @@ public class SyncTestView extends ViewPart {
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
 		gridData.horizontalSpan = 3;
 		running.setLayoutData(gridData);
-		running.setText("No progress to report");
+		running.setText("Tests Progress");
 		
 		Label percent = new Label(tests, SWT.NULL);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END);
@@ -324,15 +363,36 @@ public class SyncTestView extends ViewPart {
 		percent.setLayoutData(gridData);
 		percent.setText("000/000");
 		
-		// Progress bar for overall progress.
-		// Maybe add a second one for individual test progress?
+		// Progress bar for test progress
 		progress = new ProgressBar(tests, SWT.NULL);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 4;
 		progress.setMinimum(0); 
-		progress.setMaximum(100);
+//		progress.setMaximum(100);
 		progress.setSelection(0);
 		progress.setLayoutData(gridData);
+		
+		Label execRunning = new Label(tests, SWT.LEFT);
+		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
+		gridData.horizontalSpan = 3;
+		execRunning.setLayoutData(gridData);
+		execRunning.setText("Executions Progress");
+		
+		Label execPercent = new Label(tests, SWT.NULL);
+		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END);
+		gridData.horizontalSpan = 1;
+		execPercent.setLayoutData(gridData);
+		execPercent.setText("000/000");
+		
+		// Progress bar for execution progress
+		execProgress = new ProgressBar(tests, SWT.NULL);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalSpan = 4;
+		progress.setMinimum(0); 
+		execProgress.setLayoutData(gridData);
+		execProgress.setMinimum(0);
+		execProgress.setSelection(0);
+		
 		
 		Label passed = new Label(tests, SWT.NULL);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_CENTER);
@@ -346,6 +406,27 @@ public class SyncTestView extends ViewPart {
 		passAmnt.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		passAmnt.setText("0.0%");
 		
+		passAmnt.addListener(SWT.MouseDown, new Listener() {
+			public void handleEvent(Event event) {
+				if(passAmntIsFraction) {
+					if(results == null) {
+						passAmnt.setText("0.0%");
+					} else {
+						passAmnt.setText(String.format("%.2f", pass/total*100)+"%");
+					}
+					passAmntIsFraction = false;
+				} else {
+					if(results == null) {
+						passAmnt.setText("000/000");
+					} else {
+						passAmnt.setText((int)pass+"/"+(int)total);
+					}
+					passAmntIsFraction = true;
+				}
+			}
+			
+		});
+		
 		Label failed = new Label(tests, SWT.NULL);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_CENTER);
 		failed.setLayoutData(gridData);
@@ -358,10 +439,31 @@ public class SyncTestView extends ViewPart {
 		failAmnt.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		failAmnt.setText("0.0%");
 		
-		Label error = new Label(tests, SWT.NULL);
+		failAmnt.addListener(SWT.MouseDown, new Listener() {
+			public void handleEvent(Event event) {
+				if(failAmntIsFraction) {
+					if(results == null) {
+						failAmnt.setText("0.0%");
+					} else {
+						failAmnt.setText(String.format("%.2f", fail/total*100)+"%");
+					}
+					failAmntIsFraction = false;
+				} else {
+					if(results == null) {
+						failAmnt.setText("000/000");
+					} else {
+						failAmnt.setText((int)fail+"/"+(int)total);
+					}
+					failAmntIsFraction = true;
+				}
+			}
+			
+		});
+		
+		Label errorLbl = new Label(tests, SWT.NULL);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_CENTER);
-		error.setLayoutData(gridData);
-		error.setText("Errors:");
+		errorLbl.setLayoutData(gridData);
+		errorLbl.setText("Errors:");
 		
 		errAmnt = new Text(tests, SWT.READ_ONLY);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
@@ -369,6 +471,27 @@ public class SyncTestView extends ViewPart {
 		errAmnt.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
 		errAmnt.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		errAmnt.setText("0.0%");
+		
+		errAmnt.addListener(SWT.MouseDown, new Listener() {
+			public void handleEvent(Event event) {
+				if(errAmntIsFraction) {
+					if(results == null) {
+						errAmnt.setText("0.0%");
+					} else {
+						errAmnt.setText(String.format("%.2f", error/total*100)+"%");
+					}
+					errAmntIsFraction = false;
+				} else {
+					if(results == null) {
+						errAmnt.setText("000/000");
+					} else {
+						errAmnt.setText((int)error+"/"+(int)total);
+					}
+					errAmntIsFraction = true;
+				}
+			}
+			
+		});
 		
 		Label deadlocked = new Label(tests, SWT.NULL);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_CENTER);
@@ -381,6 +504,27 @@ public class SyncTestView extends ViewPart {
 		deadAmnt.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		deadAmnt.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		deadAmnt.setText("0.0%");
+		
+		deadAmnt.addListener(SWT.MouseDown, new Listener() {
+			public void handleEvent(Event event) {
+				if(deadAmntIsFraction) {
+					if(results == null) {
+						deadAmnt.setText("0.0%");
+					} else {
+						deadAmnt.setText(String.format("%.2f", dead/total*100)+"%");
+					}
+					deadAmntIsFraction = false;
+				} else {
+					if(results == null) {
+						deadAmnt.setText("000/000");
+					} else {
+						deadAmnt.setText((int)dead+"/"+(int)total);
+					}
+					deadAmntIsFraction = true;
+				}
+			}
+			
+		});
 		
 		canvas = new Canvas(tests, SWT.NONE);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
@@ -444,9 +588,9 @@ public class SyncTestView extends ViewPart {
 		item9.setToolTipText("Button 9");
 		item9.setImage(getDefaultImage());
 		
-		fail_results = new Tree(failures, SWT.VIRTUAL | SWT.BORDER);
+		failureTree = new Tree(failures, SWT.VIRTUAL | SWT.BORDER);
 		gridData = new GridData(GridData.FILL_BOTH);
-		fail_results.setLayoutData(gridData);
+		failureTree.setLayoutData(gridData);
 		
 		resultTree.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
@@ -494,17 +638,33 @@ public class SyncTestView extends ViewPart {
 		      public void handleEvent(Event event) {
 		        switch (event.type) {
 		        case SWT.Selection:
-		        	runner.runTests(sourceDir.getText(), testDir.getText(), outputDir.getText(), 
-		        			sleepAmnt.getText(), testCountAmnt.getText());
-		        	populateCanvas();
+		        	clearResultFields(); // in case tests are being run a second time
+		        	runner.runTests(baseDir.getText(), sourceDir.getText(), testDir.getText(), sleepAmnt.getText(), testCountAmnt.getText());
+		        	populateResultFields();
 		        }
 		      }
 		    });
 		
 		testing.setControl(composite);
 	}
+	
+	public void importDirs(String path) {
+	// this can probably be improved
+		File file = new File(path);
+		String[] names = file.list();
 
-	public void populateCanvas() {
+		for(String name : names) {
+			if(new File(path + "/" + name).isDirectory()) {
+				if(name.contains("source") || name.contains("src")) {
+					sourceDir.setText(path + "/" + name);
+				} else if(name.contains("test") || name.contains("tst")) {
+					testDir.setText(path + "/" + name);
+				}
+			}
+		}
+	}
+
+	public void populateResultFields() {
 		results = runner.getResults();
 		
 		//iterate through results, populate tree
@@ -537,7 +697,7 @@ public class SyncTestView extends ViewPart {
 		errAmnt.setText(String.format("%.2f", error/total*100)+"%");
 		deadAmnt.setText(String.format("%.2f", dead/total*100)+"%");
 		
-		//fill canvas
+		//fill main canvas
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 	            Rectangle clientArea = canvas.getClientArea();
@@ -556,6 +716,34 @@ public class SyncTestView extends ViewPart {
 	            //pass
 	            e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 	            e.gc.fillRectangle(clientArea.x, clientArea.y, (int)(clientArea.width*(pass/total)), clientArea.height);
+			}
+    	});
+	}
+	
+	public void clearResultFields() {
+		// this doesn't work for some reason
+		pass = 0; fail = 0; error = 0; dead = 0;
+		resultTree.removeAll();
+		failureTree.removeAll();
+		
+		passAmnt.setText("0.0%");
+		failAmnt.setText("0.0%");
+		errAmnt.setText("0.0%");
+		deadAmnt.setText("0.0%");
+		
+		canvas.addPaintListener(new PaintListener() {
+			public void paintControl(PaintEvent e) {
+	            Rectangle clientArea = canvas.getClientArea();
+	            e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+	            e.gc.fillRectangle(clientArea.x,  clientArea.y, clientArea.width, clientArea.height);
+			}
+    	});
+		
+		detailCanvas.addPaintListener(new PaintListener() {
+			public void paintControl(PaintEvent e) {
+	            Rectangle clientArea = detailCanvas.getClientArea();
+	            e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+	            e.gc.fillRectangle(clientArea.x,  clientArea.y, clientArea.width, clientArea.height);
 			}
     	});
 	}

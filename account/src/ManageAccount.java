@@ -30,6 +30,7 @@ public class ManageAccount extends Thread {
         account.withdraw(100);
         Account acc = accounts[(i+1)%num]; //transfering to the next account
         account.transfer(acc, 100);
+        
     }
 
     static public void printAllAccounts(){
@@ -38,6 +39,16 @@ public class ManageAccount extends Thread {
                 ManageAccount.accounts[j].print();
             }
         }
+    }
+
+    public boolean isPrime(int number) {
+        int sqrt = (int) Math.sqrt(number) + 1;
+        for (int x = 2; x < sqrt; x++) {
+            if (number % x == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }//end of class ManageAccount
