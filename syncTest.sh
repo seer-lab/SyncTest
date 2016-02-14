@@ -60,8 +60,6 @@ do
     echo "Running $t... "
     for i in $(seq 1 $LOOP_COUNT)
     do
-        echo -n "Execution $i: "
-
         # start deadlock detection script
         csh checkDeadlock.sh $t $PATH_TO_OUT/$t-$i.txt &
 
@@ -70,13 +68,13 @@ do
 
         # print status of each test
         if (grep --quiet OK $PATH_TO_OUT/$t-$i.txt) then
-            echo "Passed"
+            echo "Execution $i: Passed"
         elif (grep --quiet deadlock $PATH_TO_OUT/$t-$i.txt) then
-            echo -n "" # pkill will print "Killed" so we do nothing here
+            echo "Execution $i: Deadlocked"
         elif (grep --quiet Failures $PATH_TO_OUT/$t-$i.txt) then
-            echo "Failed"
+            echo "Execution $i: Failed"
         else
-            echo "This shouldn't happen!"
+            echo "Execution $i: This shouldn't happen!"
         fi
 
         # kill the deadlock detection script, or it will run forever

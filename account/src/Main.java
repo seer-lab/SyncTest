@@ -61,8 +61,7 @@ public class Main {
             }
 
             for(int j = 0; j < ManageAccount.num; j++) {
-                if(rnd.nextBoolean() && j == 0) {
-                    // chance to create a test failure
+                if(j == 0 && rnd.nextInt(10) == 3) {
                     bank[j] = new ManageAccount(accountName[j], 99, j);
                 } else {
                     bank[j] = new ManageAccount(accountName[j], 100, j);
@@ -102,6 +101,7 @@ public class Main {
         } catch(Exception e){ //FileNotFound, Security
            e.printStackTrace();
         }
+
 
     }//end of function main
 }//end of class Main

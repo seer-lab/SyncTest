@@ -4,11 +4,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 
-public class Test100K {
+public class Test5K {
     @Test
-    public void test100K() {
+    public void test5K() {
         account.src.Main m = new account.src.Main();
-        m.Runner(new String[] {"100000"});
+        m.Runner(new String[] {"5000"});
         assertTrue((m.less==false)&&(m.more==false));
     }
 }

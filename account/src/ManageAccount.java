@@ -30,7 +30,7 @@ public class ManageAccount extends Thread {
         account.withdraw(100);
         Account acc = accounts[(i+1)%num]; //transfering to the next account
         account.transfer(acc, 100);
-        
+
     }
 
     static public void printAllAccounts(){

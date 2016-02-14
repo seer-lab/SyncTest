@@ -18,7 +18,7 @@ class Account {
     }
 
     synchronized void withdraw(double money) {
-        amount -= money;   
+        amount -= money;
     }
 
     synchronized void transfer(Account ac, double mn) {

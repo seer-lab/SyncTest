@@ -1,15 +1,16 @@
-# This version is to be used ONLY by the eclipse plugin
+# This script is run by the SyncTest plugin
 
 BASE_DIR=$1
 PATH_TO_SRC=$2
 PATH_TO_TST=$3
 LOOP_COUNT=$4
 
+# make directory for outputs if it doesn't already exist
 mkdir $BASE_DIR/out
 PATH_TO_OUT=$BASE_DIR/out
 
-# remove the old files so they don't affect results
-rm $PATH_TO_OUT/*.txt
+# remove the old output files (if they exist)
+rm $PATH_TO_OUT/*.txt*
 
 echo "-----------VARS-----------"
 echo "BASE_DIR: $BASE_DIR"
@@ -17,6 +18,7 @@ echo "PATH_TO_SRC: $PATH_TO_SRC"
 echo "PATH_TO_TST: $PATH_TO_TST"
 echo "PATH_TO_OUT: $PATH_TO_OUT"
 echo "LOOP_COUNT : $LOOP_COUNT"
+echo "SLEEP AMNT : $5"
 echo "--------------------------"
 
 # compile all source and test files
@@ -33,36 +35,39 @@ done
 TESTS=$(ls $PATH_TO_TST/*.java | xargs -n 1 basename)
 TESTS=$(echo "$TESTS" | cut -f 1 -d '.' )
 
-cd $BASE_DIR/..
+cd $BASE_DIR/.. # GOTTA FIX THIS
 
 for t in $TESTS
 do
-    echo "Running $t... "
+    echo "Running: $t"
     for i in $(seq 1 $LOOP_COUNT)
     do
-        echo -n "Execution $i: "
+        #echo -n "Executions: $i/$LOOP_COUNT: "
 
         # start deadlock detection script
-        csh checkDeadlock.sh $t $PATH_TO_OUT/$t-$i.txt &
+        csh checkDeadlock.sh $t $PATH_TO_OUT/$t-$i.txt $5 &
 
         # run test and redirect output to text file
         java -cp junit-4.12.jar:hamcrest-core-1.3.jar:. org.junit.runner.JUnitCore $RUN_TESTS.$t > $PATH_TO_OUT/$t-$i.txt
 
         # print status of each test
         if (grep --quiet OK $PATH_TO_OUT/$t-$i.txt) then
-            echo "Passed"
+            echo "Execution $i/$LOOP_COUNT: Passed"
         elif (grep --quiet deadlock $PATH_TO_OUT/$t-$i.txt) then
-            echo -n "" # pkill will print "Killed" so we do nothing here
+            echo "Execution $i/$LOOP_COUNT: Deadlocked"
         elif (grep --quiet Failures $PATH_TO_OUT/$t-$i.txt) then
-            echo "Failed"
+            echo "Execution $i/$LOOP_COUNT: Failed"
         else
-            echo "This shouldn't happen!"
+            echo "Execution $i/$LOOP_COUNT: Error"
         fi
-
+        
         # kill the deadlock detection script, or it will run forever
         pkill -KILL -f checkDeadlock.sh
     done
+    echo "$t Completed"
 done
+
+echo "all tests finished"
 
 # Combine all text files into one for the parser
 for t in $TESTS

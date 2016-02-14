@@ -11,7 +11,6 @@ purge-account:
 	rm account/src/*.class account/tests/*.class Parser.class
 	rm account/out/*.txt account/out/*.txt.grep
 
-
 build-xtango:
 	javac -cp junit-4.12.jar xtangoanimation/src/*.java xtangoanimation/tests/*.java Parser.java
 

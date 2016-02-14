@@ -8,21 +8,17 @@ import java.util.regex.Pattern;
 
 public class Parser {
 	Result result;
-	File file;
-	int testsRun;
 	
-	public Parser(File file, int testsRun) {
-		this.file = file;
-		this.testsRun = testsRun;
-	}
+	public Parser() {}
 	
-	public Result parse() {
+	public Result parse(File file, int testsRun) {
+		String raw = "";
 		Pattern pass = Pattern.compile("OK");
 		Pattern fail = Pattern.compile("Failures");
-		Pattern err = Pattern.compile("(?d)[)] test");
+//		Pattern err = Pattern.compile("(?d)[)] test");
 		Pattern dead = Pattern.compile("Found one");
-		Pattern assrt = Pattern.compile("at account.tests.Test(.*).test(.*)[(]Test(.*).java:(.*)[)]");
-		String errors = "";
+//		Pattern assert = Pattern.compile("at account.tests.Test(.*).test(.*)[(]Test(.*).java:(.*)[)]");
+		//String errors = "";
 
 		int passCount = 0;
 		int failCount = 0;
@@ -33,11 +29,12 @@ public class Parser {
 			String line;
 
 			while((line = br.readLine()) != null) {
+				raw += line+"\n";
 				Matcher m0 = pass.matcher(line);
 				Matcher m1 = fail.matcher(line);
-				Matcher m2 = err.matcher(line);
+//				Matcher m2 = err.matcher(line);
 				Matcher m3 = dead.matcher(line);
-				Matcher m4 = assrt.matcher(line);
+//				Matcher m4 = assert.matcher(line);
 
 				while(m0.find()) {
 					passCount++;
@@ -72,11 +69,12 @@ public class Parser {
 			}
 			
 			int errCount = 0;
-			//int errCount = testsRun - passCount - failCount - deadCount;
+			//mint errCount = testsRun - passCount - failCount - deadCount;
 			
-
-			result = new Result(file.toString(), passCount, failCount, errCount, deadCount, testsRun);
-			result.printResult();
+			String[] str = file.toString().split("/");
+			String name = str[str.length-1].split("-all")[0];
+			result = new Result(name, passCount, failCount, errCount, deadCount, testsRun, raw);
+			//result.printResult();
 			br.close();
 		
 		} catch (Exception e) {
