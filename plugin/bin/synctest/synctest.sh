@@ -25,8 +25,10 @@ echo "--------------------------"
 javac -cp junit-4.12.jar $PATH_TO_SRC/*.java $PATH_TO_TST/*.java
 
 RUN_TESTS=""
+
 for entry in $PATH_TO_TST/*.java
 do
+    # get the package name from one of the test files
     RUN_TESTS=$(grep package $entry | awk '{print $2}' | sed 's/;$//')
     break # there's almost definitely a better way to do this
 done
@@ -35,15 +37,21 @@ done
 TESTS=$(ls $PATH_TO_TST/*.java | xargs -n 1 basename)
 TESTS=$(echo "$TESTS" | cut -f 1 -d '.' )
 
-cd $BASE_DIR/.. # GOTTA FIX THIS
+cp junit-4.12.jar $BASE_DIR/..
+cp hamcrest-core-1.3.jar $BASE_DIR/..
 
+
+if [[ !  -z  $param  ]]; then
+    cd $BASE_DIR
+else
+    cd $BASE_DIR/..
+fi
+    
 for t in $TESTS
 do
     echo "Running: $t"
     for i in $(seq 1 $LOOP_COUNT)
     do
-        #echo -n "Executions: $i/$LOOP_COUNT: "
-
         # start deadlock detection script
         csh checkDeadlock.sh $t $PATH_TO_OUT/$t-$i.txt $5 &
 
@@ -68,12 +76,5 @@ do
 done
 
 echo "all tests finished"
-
-# Combine all text files into one for the parser
-for t in $TESTS
-do
-    for i in $(seq 1 $i)
-    do
-        cat $PATH_TO_OUT/$t-$i.txt >> $PATH_TO_OUT/$t-all.txt
-    done
-done
+rm junit-4.12.jar
+rm hamcrest-core-1.3.jar

@@ -18,13 +18,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.Vector;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.*;
-
 
 public class SyncTestView extends ViewPart {
 
@@ -34,9 +35,10 @@ public class SyncTestView extends ViewPart {
 
 	private double pass = 0, fail = 0, error = 0, dead = 0, total = 0;
 
-	private Vector<Result> results;
-	private Vector<ExecutionResult> executionResults;
+	private Vector<Result> results = new Vector<Result>();
+	private Vector<ExecutionResult> executionResults = new Vector<ExecutionResult>();
 	private Result selection;
+	private String currentTest;
 
 	IWorkbench 		workbench 	= PlatformUI.getWorkbench();
 	ISharedImages 	images 		= workbench.getSharedImages();
@@ -49,7 +51,7 @@ public class SyncTestView extends ViewPart {
     GridData 		gridData;
     GridLayout 		gridLayout;
 
-    Text 			baseDir, sourceDir, testDir, outputDir;
+    Text 			baseDir, sourceDir, testDir;
 
     Text 			sleepAmnt, testCountAmnt;
     Scale 			threshold;
@@ -57,35 +59,24 @@ public class SyncTestView extends ViewPart {
     Button 			passBox, failBox, deadBox;
 
     //TESTING TAB
-    ToolBar 		toolbar;
-    ToolItem 		item, item2, item3, item4, item5, item6;
-
 	ProgressBar 	progress, execProgress;
     Label			running, execRunning, testLabel, execLabel;
     Text 			passAmnt, failAmnt, errAmnt, deadAmnt;
+    
     boolean			passAmntIsFraction = false, failAmntIsFraction = false,
-    				errAmntIsFraction = false, deadAmntIsFraction = false;
+    				errAmntIsFraction = false,  deadAmntIsFraction = false;
 
     Canvas 			canvas;
     Canvas 			detailCanvas;
 
+    Combo 			combo;
     Tree 			resultTree;
-
-    ToolBar 		toolbar2;
-    ToolItem 		item7, item8, item9;
     Text 			testDetails;
 
     Button 			run;
 
-	/**
-	 * The constructor.
-	 */
 	public SyncTestView() {}
 
-	/**
-	 * This is a callback that will allow us
-	 * to create the viewer and initialize it.
-	 */
 	public void createPartControl(Composite parent) {
 	    //Create tabs for configuration and testing
 		CTabFolder tabs = new CTabFolder(parent, SWT.NONE);
@@ -103,23 +94,26 @@ public class SyncTestView extends ViewPart {
 		composite.setLayoutData(gridData);
 		gridLayout = new GridLayout();
 		composite.setLayout(gridLayout);
+		
+		/**************************************************************************************************/
 
-		//Group for configuring folders
 		Group folders = new Group(composite, SWT.NULL);
 		folders.setText("Directory Settings");
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		folders.setLayoutData(gridData);
 		folders.setLayout(new GridLayout(2, false));
 
+		// Text entry for project base directory
 		baseDir = new Text(folders, SWT.NONE);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		baseDir.setLayoutData(gridData);
 		baseDir.setMessage("Select the project base directory");
 
+		// Button to launch file browser
 		Button setBaseDir = new Button(folders, SWT.PUSH);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		setBaseDir.setLayoutData(gridData);
-		setBaseDir.setText("  ...  ");
+		setBaseDir.setImage(new Image(Display.getDefault(), getClass().getResourceAsStream("/icons/fldr_obj.gif")));
 
 		Button findDirs = new Button(folders, SWT.CHECK);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
@@ -131,7 +125,8 @@ public class SyncTestView extends ViewPart {
 		      public void handleEvent(Event e) {
 		        switch (e.type) {
 		        case SWT.Selection:
-		            DirectoryDialog dialog = new DirectoryDialog( PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN );
+		            DirectoryDialog dialog = new DirectoryDialog(
+		            		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN);
 		            dialog.setMessage("Select the base directory for your project");
 
 		            if(System.getProperty("os.name").equals("Linux")) {
@@ -151,21 +146,24 @@ public class SyncTestView extends ViewPart {
 		gridData.horizontalSpan = 2;
 		seperator.setLayoutData(gridData);
 
+		// Text entry for project source code
 		sourceDir = new Text(folders, SWT.NONE);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		sourceDir.setLayoutData(gridData);
 		sourceDir.setMessage("Select the directory containing source code");
 
+		// Button to launch file browser
 		Button setSourceDir = new Button(folders, SWT.PUSH);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		setSourceDir.setLayoutData(gridData);
-		setSourceDir.setText("  ...  ");
+		setSourceDir.setImage(new Image(Display.getDefault(), getClass().getResourceAsStream("/icons/fldr_obj.gif")));
 
 	    setSourceDir.addListener(SWT.Selection, new Listener() {
 		      public void handleEvent(Event e) {
 		        switch (e.type) {
 		        case SWT.Selection:
-		            DirectoryDialog dialog = new DirectoryDialog( PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN );
+		            DirectoryDialog dialog = new DirectoryDialog(
+		            		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN);
 		            dialog.setMessage("Select the directory containing project source files");
 
 		            if(System.getProperty("os.name").equals("Linux")) {
@@ -177,21 +175,24 @@ public class SyncTestView extends ViewPart {
 		      }
 		    });
 
-		testDir = new Text(folders, SWT.NONE);
+		// Text entry for project test directory
+	    testDir = new Text(folders, SWT.NONE);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		testDir.setLayoutData(gridData);
 		testDir.setMessage("Select the directory containing junit tests");
 
+		// Button to launch file browser
 		Button setTestDir = new Button(folders, SWT.PUSH);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		setTestDir.setLayoutData(gridData);
-		setTestDir.setText("  ...  ");
+		setTestDir.setImage(new Image(Display.getDefault(), getClass().getResourceAsStream("/icons/fldr_obj.gif")));
 
 		setTestDir.addListener(SWT.Selection, new Listener() {
 		      public void handleEvent(Event e) {
 		        switch (e.type) {
 		        case SWT.Selection:
-		            DirectoryDialog dialog = new DirectoryDialog( PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN );
+		            DirectoryDialog dialog = new DirectoryDialog(
+		            		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN);
 		            dialog.setMessage("Select the directory containing your test files");
 
 		            if(System.getProperty("os.name").equals("Linux")) {
@@ -202,32 +203,6 @@ public class SyncTestView extends ViewPart {
 		        }
 		      }
 		    });
-
-//		outputDir = new Text(folders, SWT.NONE);
-//		gridData = new GridData(GridData.FILL_HORIZONTAL);
-//		outputDir.setLayoutData(gridData);
-//		outputDir.setMessage("Select the directory for output files");
-//
-//		Button setOutputDir = new Button(folders, SWT.PUSH);
-//		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-//		setOutputDir.setLayoutData(gridData);
-//		setOutputDir.setText("  ...  ");
-//
-//		setOutputDir.addListener(SWT.Selection, new Listener() {
-//		      public void handleEvent(Event e) {
-//		        switch (e.type) {
-//		        case SWT.Selection:
-//		            DirectoryDialog dialog = new DirectoryDialog( PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN );
-//		            dialog.setMessage("Select the directory to place the output files");
-//
-//		            if(System.getProperty("os.name").equals("Linux")) {
-//		            	dialog.setFilterPath("/home");
-//		            }
-//		            sourceDir.setText(dialog.open());
-//		          break;
-//		        }
-//		      }
-//		    });
 
 	    /**************************************************************************************************/
 
@@ -244,6 +219,7 @@ public class SyncTestView extends ViewPart {
 		checkLbl.setLayoutData( gridData );
 		checkLbl.setText("Check for deadlocks every ");
 
+		// The amount of seconds to sleep between deadlock checks
 		sleepAmnt = new Text(settings, SWT.NULL);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 3;
@@ -260,6 +236,7 @@ public class SyncTestView extends ViewPart {
 		testCountLbl.setLayoutData( gridData );
 		testCountLbl.setText("Run each test ");
 
+		// The amount of times to run each test
 		testCountAmnt = new Text(settings, SWT.NULL);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 4;
@@ -271,48 +248,48 @@ public class SyncTestView extends ViewPart {
 		times.setLayoutData(gridData);
 		times.setText(" time(s)");
 
-		Label thresholdLbl = new Label(settings, SWT.NULL);
-		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
-		thresholdLbl.setLayoutData(gridData);
-		thresholdLbl.setText("Pass Threshold: ");
-
-		threshold = new Scale(settings, SWT.HORIZONTAL);
-		gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = 4;
-		threshold.setLayoutData(gridData);
-		threshold.setSelection(70);
-
-		Label scaleLbl = new Label(settings, SWT.NULL);
-		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
-		scaleLbl.setLayoutData(gridData);
-		scaleLbl.setText(threshold.getSelection() + "%");
-
-		threshold.addListener(SWT.Selection, new Listener() {
-		      public void handleEvent(Event event) {
-		    	  scaleLbl.setText(threshold.getSelection() + "%");
-		      }
-		    });
+//		Label thresholdLbl = new Label(settings, SWT.NULL);
+//		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
+//		thresholdLbl.setLayoutData(gridData);
+//		thresholdLbl.setText("Pass Threshold: ");
+//
+//		threshold = new Scale(settings, SWT.HORIZONTAL);
+//		gridData = new GridData(GridData.FILL_HORIZONTAL);
+//		gridData.horizontalSpan = 4;
+//		threshold.setLayoutData(gridData);
+//		threshold.setSelection(70);
+//
+//		Label scaleLbl = new Label(settings, SWT.NULL);
+//		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+//		scaleLbl.setLayoutData(gridData);
+//		scaleLbl.setText(threshold.getSelection() + "%");
+//
+//		threshold.addListener(SWT.Selection, new Listener() {
+//		      public void handleEvent(Event event) {
+//		    	  scaleLbl.setText(threshold.getSelection() + "%");
+//		      }
+//		    });
 
 
 		/**************************************************************************************************/
 
-		Group parser = new Group(composite, SWT.NULL);
-		parser.setText("Parser Settings");
-		gridData = new GridData(GridData.FILL_HORIZONTAL);
-		parser.setLayoutData(gridData);
-		parser.setLayout(new GridLayout(1, false));
-
-		passBox = new Button(parser, SWT.CHECK);
-		passBox.setText("Count Test Passes");
-		passBox.setSelection(true);
-
-		failBox = new Button(parser, SWT.CHECK);
-		failBox.setText("Count Test Failures");
-		failBox.setSelection(true);
-
-		deadBox = new Button(parser, SWT.CHECK);
-		deadBox.setText("Count Test Deadlocks");
-		deadBox.setSelection(true);
+//		Group parser = new Group(composite, SWT.NULL);
+//		parser.setText("Parser Settings");
+//		gridData = new GridData(GridData.FILL_HORIZONTAL);
+//		parser.setLayoutData(gridData);
+//		parser.setLayout(new GridLayout(1, false));
+//
+//		passBox = new Button(parser, SWT.CHECK);
+//		passBox.setText("Count Test Passes");
+//		passBox.setSelection(true);
+//
+//		failBox = new Button(parser, SWT.CHECK);
+//		failBox.setText("Count Test Failures");
+//		failBox.setSelection(true);
+//
+//		deadBox = new Button(parser, SWT.CHECK);
+//		deadBox.setText("Count Test Deadlocks");
+//		deadBox.setSelection(true);
 
 		config.setControl(composite);
 	}
@@ -326,50 +303,57 @@ public class SyncTestView extends ViewPart {
 		composite.setLayoutData(gridData);
 		gridLayout = new GridLayout(2, false);
 		composite.setLayout(gridLayout);
+		
+		/**************************************************************************************************/
 
 		Group tests = new Group(composite, SWT.NULL);
-		tests.setText("Testing");
-		gridData = new GridData(GridData.FILL_BOTH);
+		tests.setText("Testing Overview");
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 2;
 		tests.setLayoutData(gridData);
 		tests.setLayout(new GridLayout(4, false));
 
-		// TODO populate with buttons similar to JUnit
-		toolbar = new ToolBar(tests, SWT.NULL);
+		// A toolbar containing some useful buttons
+		ToolBar toolbar = new ToolBar(tests, SWT.NULL);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_CENTER);
 		gridData.horizontalSpan = 4;
 		toolbar.setLayoutData(gridData);
 
-		item = new ToolItem(toolbar, SWT.PUSH);
-		item.setToolTipText("Button 1");
-		item.setImage(getDefaultImage());
+		// Button to clear all widgets
+		ToolItem clear = new ToolItem(toolbar, SWT.PUSH);
+		clear.setToolTipText("clear all fields");
+		clear.setImage(new Image(Display.getDefault(), getClass().getResourceAsStream("/icons/clear_co.gif")));
+		clear.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				clearResultWidgets();
+			}
+		});
 		
-		item2 = new ToolItem(toolbar, SWT.CHECK);
-		item2.setToolTipText("Button 2");
-		item2.setImage(getDefaultImage());
-		
-		item3 = new ToolItem(toolbar, SWT.CHECK);
-		item3.setToolTipText("Button 3");
-		item3.setImage(getDefaultImage());
-		
-		item4 = new ToolItem(toolbar, SWT.CHECK);
-		item4.setToolTipText("Button 4");
-		item4.setImage(getDefaultImage());
-		
-		item5 = new ToolItem(toolbar, SWT.CHECK);
-		item5.setToolTipText("Button 5");
-		item5.setImage(getDefaultImage());
-		
-		item6 = new ToolItem(toolbar, SWT.CHECK);
-		item6.setToolTipText("Button 6");
-		item6.setImage(getDefaultImage());
+		// Button to print results to a text file
+		ToolItem export = new ToolItem(toolbar, SWT.PUSH);
+		export.setToolTipText("export results to text file");
+		export.setImage(new Image(Display.getDefault(), getClass().getResourceAsStream("/icons/insert_template.gif")));
+		export.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				FileDialog dialog = new FileDialog(
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.SAVE);
+				dialog.setText("Choose the directory to export results to");
+
+	            if(System.getProperty("os.name").equals("Linux")) {
+	            	dialog.setFilterPath("/home");
+	            }
+
+	            String path = dialog.open();
+	            exportResults(path);
+			}
+		});
 
 		// Label to show currently running test
 		running = new Label(tests, SWT.LEFT);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
 		gridData.horizontalSpan = 4;
 		running.setLayoutData(gridData);
-		running.setText("Tests Progress\t\t\t\t\t");
+		running.setText("\t\t\t\t\t\t\t\t\t\t");
 
 		// Progress bar for test progress
 		progress = new ProgressBar(tests, SWT.NULL);
@@ -379,12 +363,12 @@ public class SyncTestView extends ViewPart {
 		progress.setSelection(0);
 		progress.setLayoutData(gridData);
 
-		// Progress bar for execution progress
+		// Label for execution progress
 		execRunning = new Label(tests, SWT.LEFT);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
 		gridData.horizontalSpan = 4;
 		execRunning.setLayoutData(gridData);
-		execRunning.setText("Executions Progress\t\t\t\t\t");
+		execRunning.setText("\t\t\t\t\t\t\t\t\t\t");
 
 		// Progress bar for execution progress
 		execProgress = new ProgressBar(tests, SWT.NULL);
@@ -400,6 +384,8 @@ public class SyncTestView extends ViewPart {
 		passed.setLayoutData(gridData);
 		passed.setText("Passes:");
 
+		// Box showing the amount of tests that have passed
+		// Can be a fraction or percentile
 		passAmnt = new Text(tests, SWT.READ_ONLY);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		passAmnt.setLayoutData(gridData);
@@ -425,6 +411,9 @@ public class SyncTestView extends ViewPart {
 		failed.setLayoutData(gridData);
 		failed.setText("Failures:");
 
+
+		// Box showing the amount of tests that have failed
+		// Can be a fraction or percentile
 		failAmnt = new Text(tests, SWT.READ_ONLY);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		failAmnt.setLayoutData(gridData);
@@ -450,6 +439,9 @@ public class SyncTestView extends ViewPart {
 		errorLbl.setLayoutData(gridData);
 		errorLbl.setText("Errors:");
 
+
+		// Box showing the amount of tests that have resulted in an error
+		// Can be a fraction or percentile
 		errAmnt = new Text(tests, SWT.READ_ONLY);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		errAmnt.setLayoutData(gridData);
@@ -475,6 +467,9 @@ public class SyncTestView extends ViewPart {
 		deadlocked.setLayoutData(gridData);
 		deadlocked.setText("Deadlocks:");
 
+
+		// Box showing the amount of tests that have deadlocked
+		// Can be a fraction or percentile
 		deadAmnt = new Text(tests, SWT.READ_ONLY);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		deadAmnt.setLayoutData(gridData);
@@ -495,6 +490,7 @@ public class SyncTestView extends ViewPart {
 
 		});
 
+		// A canvas to visualize the overall test results
 		canvas = new Canvas(tests, SWT.NONE);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 4;
@@ -502,16 +498,19 @@ public class SyncTestView extends ViewPart {
 		canvas.setLayoutData(gridData);
 		
 		canvas.addPaintListener(new PaintListener() {
+			// Automatically update canvas as the numbers come in
 			public void paintControl(PaintEvent e) {
 				canvas.setToolTipText("Pass: "+(int)pass+", Fail: "+(int)fail+", Error: "+(int)error+", Deadlock: "+(int)dead);
 				Rectangle clientArea = canvas.getClientArea();
+				
 				//pass
 				e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 				e.gc.fillRectangle(clientArea.x, clientArea.y, (int)(clientArea.width*(pass/total)), clientArea.height);
 				
 				//fail
 				e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
-				e.gc.fillRectangle((int)(clientArea.width*(pass/total)), clientArea.y, (int)(clientArea.width*(fail/total)), clientArea.height);
+				e.gc.fillRectangle((int)(clientArea.width*(pass/total)), 
+						clientArea.y, (int)(clientArea.width*(fail/total)), clientArea.height);
 				
 				//error
 				e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
@@ -525,136 +524,161 @@ public class SyncTestView extends ViewPart {
 						(int)(clientArea.width*(dead/total)), clientArea.height);
 			}
 		});
-
-		detailCanvas = new Canvas(tests, SWT.NONE);
-		gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = 4;
-		gridData.heightHint = 20;
-		detailCanvas.setLayoutData(gridData);
-
-		Group testResults = new Group(tests, SWT.NULL);
-		testResults.setText("Test Results");
+		
+		/**************************************************************************************************/
+		
+		Group testResults = new Group(composite, SWT.NULL);
+		testResults.setText("Testing Detail");
 		gridData = new GridData(GridData.FILL_BOTH);
-		gridData.horizontalSpan = 4;
+		gridData.horizontalSpan = 2;
 		testResults.setLayoutData(gridData);
 		testResults.setLayout(new GridLayout(8, false));
 
-		resultTree = new Tree(testResults, SWT.V_SCROLL | SWT.H_SCROLL);
-		gridData = new GridData(GridData.FILL_BOTH);
-		gridData.horizontalSpan = 4;
-		resultTree.setLayoutData(gridData);
+		Label selectTest = new Label(testResults, SWT.NULL);
+		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
+		gridData.horizontalSpan = 5;
+		selectTest.setLayoutData(gridData);
+		selectTest.setText("Select a test to view detailed results:");
+		
+		// A drop-down menu to select an individual test and see its results
+		combo = new Combo(testResults, SWT.DROP_DOWN | SWT.READ_ONLY);
+		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER);
+		gridData.horizontalSpan = 3;
+		combo.setLayoutData(gridData);
+		
+		// A second canvas to visualize the executions of a selected test
+		detailCanvas = new Canvas(testResults, SWT.NONE);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalSpan = 8;
+		gridData.heightHint = 20;
+		detailCanvas.setLayoutData(gridData);
+		
+		/**************************************************************************************************/
+		
+		Group executions = new Group(testResults, SWT.NULL);
+		executions.setText("Select an execution to view raw output:");
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalSpan = 8;
+		gridData.heightHint = 200;
+		executions.setLayoutData(gridData);
+		executions.setLayout(new GridLayout(1, false));
 
-		final Menu menu = new Menu(resultTree);
-	    resultTree.setMenu(menu);
-	    menu.addMenuListener(new MenuAdapter() {
-	        public void menuShown(MenuEvent e) {
-	            MenuItem[] items = menu.getItems();
-	            for (int i = 0; i < items.length; i++)
-	            {
-	                items[i].dispose();
-	            }
-	            MenuItem newItem = new MenuItem(menu, SWT.NONE);
-	            newItem.setText("Menu for " + resultTree.getSelection()[0].getText());
-	        }
-	    });
+		// A window containing individual executions which can be selected to see raw output
+		resultTree = new Tree(executions, SWT.V_SCROLL | SWT.H_SCROLL);
+		gridData = new GridData(GridData.FILL_BOTH);
+		resultTree.setLayoutData(gridData);
 
 		/**************************************************************************************************/
 
-		Group details = new Group(composite, SWT.NULL);
+		Group details = new Group(testResults, SWT.NULL);
 		gridData = new GridData(GridData.FILL_BOTH);
-		gridData.horizontalSpan = 2;
+		gridData.horizontalSpan = 8;
 		details.setLayoutData(gridData);
 		details.setLayout(new GridLayout(1, false));
-		details.setText("Test Details");
+		details.setText("Raw Output");
 
-		toolbar2 = new ToolBar(details, SWT.NULL);
-		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_CENTER);
-		toolbar2.setLayoutData(gridData);
-
-		item7 = new ToolItem(toolbar2, SWT.CHECK);
-		item7.setToolTipText("Button 7");
-		item7.setImage(getDefaultImage());
-		item8 = new ToolItem(toolbar2, SWT.CHECK);
-		item8.setToolTipText("Button 8");
-		item8.setImage(getDefaultImage());
-		item9 = new ToolItem(toolbar2, SWT.CHECK);
-		item9.setToolTipText("Button 9");
-		item9.setImage(getDefaultImage());
-
+		// A multi-line text to contain raw execution output
 		testDetails = new Text(details, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL | SWT.H_SCROLL);
+		gridData.horizontalSpan = 8;
 		gridData = new GridData(GridData.FILL_BOTH);
 		testDetails.setLayoutData(gridData);
 
-		resultTree.addListener(SWT.Selection, new Listener() {
+		combo.addListener(SWT.Selection, new Listener() {
+			// Get the selected test, update the canvas and tree
 			public void handleEvent(Event event) {
-					if (event.item instanceof TreeItem) {
-		    			for(int i = 0; i < results.size(); i++) {
-		    				if(results.get(i).getName().equals(((TreeItem)event.item).getText())) {
-		    					selection = results.get(i);
-		    					break;
-		    				}
-		    			}
-		    			
-		    			testDetails.setText(selection.getRaw());
-		    			
-		    			detailCanvas.redraw();
-		    			detailCanvas.addPaintListener(new PaintListener() {
-		    				public void paintControl(PaintEvent e) {
-		    					detailCanvas.setToolTipText(selection.getName()+" - "+"Pass: "+(int)selection.getPass()+
-		    							", Fail: "+(int)selection.getFail()+", Error: "+(int)selection.getError()+
-		    							", Deadlock: "+(int)selection.getDeadlock());
+	    		for(int i = 0; i < results.size(); i++) {
+	    			if(results.get(i).getName().equals(combo.getText())) {
+	    				selection = results.get(i);
+	    				resultTree.removeAll();
+	    				break;
+	    			}
+	    		}
+		    		
+	    		for(int i = 0; i < selection.getExecutionResults().size(); i++) {
+	    			TreeItem treeItem = new TreeItem(resultTree, SWT.NONE);
+	    			treeItem.setText("Execution "+selection.getExecutionResults().get(i).getExecutionNumber()+": "+
+	    						selection.getExecutionResults().get(i).getTestStatus());
+	    		}
+	    			
+	    		detailCanvas.redraw();
+	    		detailCanvas.addPaintListener(new PaintListener() {
+	    			public void paintControl(PaintEvent e) {
+	    				detailCanvas.setToolTipText("Pass: "+(int)selection.getPass()+", Fail: "+(int)selection.getFail()+
+	    								", Error: "+(int)selection.getError()+", Deadlock: "+(int)selection.getDeadlock());
 		    		            
-		    					Rectangle clientArea = detailCanvas.getClientArea();
+	    				Rectangle clientArea = detailCanvas.getClientArea();
 		    		            
-		    		            //pass
-								e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
-								e.gc.fillRectangle(clientArea.x, clientArea.y, 
-										(int)(clientArea.width*(selection.getPass()/selection.getTotal())), clientArea.height);
+	    		        //pass
+						e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
+						e.gc.fillRectangle(clientArea.x, clientArea.y, 
+								(int)(clientArea.width*(selection.getPass()/selection.getTotal())), clientArea.height);
 								
-								//fail
-								e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
-								e.gc.fillRectangle((int)(clientArea.width*(selection.getPass()/selection.getTotal())), 
-										clientArea.y, (int)(clientArea.width*(selection.getFail()/selection.getTotal())), clientArea.height);
+						//fail
+						e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
+						e.gc.fillRectangle((int)(clientArea.width*(selection.getPass()/selection.getTotal())), 
+								clientArea.y, (int)(clientArea.width*(selection.getFail()/selection.getTotal())), 
+								clientArea.height);
 								
-								//error
-								e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
-								e.gc.fillRectangle((int)(clientArea.width*(selection.getPass()/selection.getTotal())) + 
-										(int)(clientArea.width*(selection.getFail()/selection.getTotal())), 
-										clientArea.y,(int)(clientArea.width*(selection.getError()/selection.getTotal())), clientArea.height);
+						//error
+						e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
+						e.gc.fillRectangle((int)(clientArea.width*(selection.getPass()/selection.getTotal())) + 
+								(int)(clientArea.width*(selection.getFail()/selection.getTotal())), 
+								clientArea.y,(int)(clientArea.width*(selection.getError()/selection.getTotal())), 
+								clientArea.height);
 								
-								//deadlock
-								e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
-								e.gc.fillRectangle((int)(clientArea.width*(selection.getPass()/selection.getTotal())) + 
-										(int)(clientArea.width*(selection.getFail()/selection.getTotal())) + 
-										(int)(clientArea.width*(selection.getError()/selection.getTotal())), 
-										clientArea.y, (int)(clientArea.width*(selection.getDeadlock()/selection.getTotal())), clientArea.height);
-		    				}
-		    	    	});
-		    		}
-		      	}
-		    });
+						//deadlock
+						e.gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
+						e.gc.fillRectangle((int)(clientArea.width*(selection.getPass()/selection.getTotal())) + 
+								(int)(clientArea.width*(selection.getFail()/selection.getTotal())) + 
+								(int)(clientArea.width*(selection.getError()/selection.getTotal())), 
+								clientArea.y, (int)(clientArea.width*(selection.getDeadlock()/selection.getTotal())), 
+								clientArea.height);
+	    			}
+	    	    });
+	      	} 
+	    });
+		
+		resultTree.addListener(SWT.Selection, new Listener() {
+			// Ensure the right test is selected, find the execution and set the raw output
+			public void handleEvent(Event event) {
+				for(int i = 0; i < results.size(); i++) {
+	    			if(results.get(i).getName().equals(combo.getText())) {
+	    				selection = results.get(i);
+	    				break;
+	    			}
+	    		}
+				
+		    	for(int i = 0; i < selection.getExecutionResults().size(); i++) {
+					if(Integer.toString(selection.getExecutionResults().get(i).getExecutionNumber()).charAt(0) == ((TreeItem)event.item).getText().charAt(10)) {
+						testDetails.setText(selection.getExecutionResults().get(i).getOutputFile());
+						break;
+					}
+				}
+		      } 
+		 });
 
 		/**************************************************************************************************/
 
     	run = new Button(composite, SWT.PUSH);
 		run.setText("Run Tests");
 		run.addListener(SWT.Selection, new Listener() {
-		      public void handleEvent(Event event) {
-		        switch (event.type) {
+			// Clear widgets and file, begin running tests
+			public void handleEvent(Event event) {
+				switch (event.type) {
 		        case SWT.Selection:
-		    		clearResultWidgets(); // if we're running again
+		        	clearResultWidgets();
 		        	clearOutputFile();
 		        	runTests();
-		        }
-		      }
-		    });
+				}
+			}
+		});
 
 		Button cancel = new Button(composite, SWT.PUSH);
 		cancel.setText("Cancel");
 
 		testing.setControl(composite);
 	}
-
+	
 	public void runTests() {
 		File file = new File(testDir.getText());
     	
@@ -677,13 +701,12 @@ public class SyncTestView extends ViewPart {
     	(new Thread() {
     		public void run() {
     			try {
-    				BufferedReader in = new BufferedReader(new FileReader("syncTestOutput.txt"));
+    				URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
+    				BufferedReader in = new BufferedReader(new FileReader(location.getFile()+"src/synctest/testing/syncTestOutput.txt"));
     				String line;
     				while(true) {
     					if((line = in.readLine()) != null) {
-    						//System.out.println("Reading: " + line);
     						// grab the output line from the other thread and pass it on to update UI
-
     						if(line.contains("finished")) {
     							in.close();
     							updateResultWidgets(line);
@@ -692,16 +715,10 @@ public class SyncTestView extends ViewPart {
     						
     						updateResultWidgets(line);
     					} else {
-    						//System.out.println("Waiting to read...");
-    						Thread.sleep(500); // poll the file every x seconds
+    						// poll the file every n milliseconds
+    						Thread.sleep(500);
     					}
     				}
-    	
-    				while(runner.getResults() == null) {
-    					; // wait
-    				}
-    				
-    				populateResultWidgets();
     			} catch(Exception e) {
     				e.printStackTrace();
     			}
@@ -709,7 +726,9 @@ public class SyncTestView extends ViewPart {
     	}).start();
 	}
 
+	
 	public void importDirs(String path) {
+		// Try to find the source and test directories in the base directory
 		File file = new File(path);
 		String[] names = file.list();
 
@@ -724,63 +743,51 @@ public class SyncTestView extends ViewPart {
 		}
 	}
 
-	public void populateResultWidgets() {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				results = runner.getResults();
-
-				//iterate through results, populate tree
-				for(int i = 0; i < results.size(); i++) {
-
-					TreeItem test = new TreeItem(resultTree, SWT.NONE);
-					test.setText(results.get(i).getName());
-
-					TreeItem testPass = new TreeItem(test, SWT.NONE);
-					testPass.setText("Pass: "+ (int)results.get(i).getPass());
-
-					TreeItem testFail = new TreeItem(test, SWT.NONE);
-					testFail.setText("Fail: "+ (int)results.get(i).getFail());
-
-					TreeItem testError = new TreeItem(test, SWT.NONE);
-					testError.setText("Error: "+ (int)results.get(i).getError());
-
-					TreeItem testDeadlock = new TreeItem(test, SWT.NONE);
-					testDeadlock.setText("Deadlock: "+ (int)results.get(i).getDeadlock());
-				
-				}
-			}
-		});
-	}
-
+	
 	public void updateResultWidgets(String line) {
 		Display.getDefault().asyncExec(new Runnable() {
+			@SuppressWarnings("unchecked")
 			public void run() {
 				
-				//update progress bars
 				if(line.contains("Running")) {
 					// A new set of tests is running, reset executions progress
 					running.setText(line);
 					execProgress.setSelection(0);
+					currentTest = line.split(" ")[1];
 					
 				} else if(line.contains("Completed")) {
-					// A set of tests has finished, update first progress bar
+					// A set of tests has finished, update first progress bar/label
+					// Create new result instance and add it to the combo
 					progress.setSelection(progress.getSelection()+1);
 					execRunning.setText("Execution 0/"+testCountAmnt.getText());
 					
+					results.add(new Result(currentTest, (Vector<ExecutionResult>) executionResults.clone()));
+					executionResults.clear();
+					
+					combo.add(results.get(results.size()-1).getName());
+					
 				} else if(line.contains("Execution")) {
-					// An execution has finished, update execution progress bar/label	
+					// An execution has finished, update execution progress bar/label
+					// Create a new execution result instance
 					execProgress.setSelection(execProgress.getSelection()+1);
 					String str[] = line.split(" ");
 					execRunning.setText(str[0]+" "+str[1]);
+					
+					int number = Integer.parseInt(str[1].split("/")[0]);
+					File output = new File(baseDir.getText()+"/out/"+currentTest+"-"+number+".txt");
+					
 					if(line.contains("Passed")) {
 						pass += 1;total += 1;
-						//executionResults.add(new ExecutionResult(Integer.parseInt(str[1].split("/")[0]), "pass"));
+						executionResults.add(new ExecutionResult(number, "pass", output));
 					} else if(line.contains("Failed")) {
 						fail +=1; total +=1;
+						executionResults.add(new ExecutionResult(number, "fail", output));
 					} else if(line.contains("Deadlocked")) {
 						dead += 1; total +=1;
+						executionResults.add(new ExecutionResult(number, "deadlock", output));
 					} else if(line.contains("Error")) {
 						error += 1; total +=1;
+						executionResults.add(new ExecutionResult(number, "error", output));
 					}
 					
 				} else if(line.contains("finished")) {
@@ -818,8 +825,9 @@ public class SyncTestView extends ViewPart {
 
 
 	}
-
+	
 	public void clearResultWidgets() {
+		// Clear all widgets that display results
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				pass = 0; fail = 0; error = 0; dead = 0; total = 0;
@@ -828,16 +836,24 @@ public class SyncTestView extends ViewPart {
 					results.clear();
 				}
 				
+				if(executionResults != null) {
+					executionResults.clear();
+				}
+				
 				progress.setSelection(0);
 				execProgress.setSelection(0);
 				
 				resultTree.deselectAll();
 				
+				selection = null;
+				currentTest = null;
+				
 				canvas.redraw();
 				detailCanvas.redraw();
 				
+				combo.removeAll();
 				resultTree.removeAll();
-				testDetails.clearSelection();
+				testDetails.setText("");
 
 				if(passAmntIsFraction) {
 					passAmnt.setText("000/000");
@@ -866,14 +882,35 @@ public class SyncTestView extends ViewPart {
 		});
 	}
 
+	
 	public void clearOutputFile() {
+		//Clear the output file so the results unaffected
 		try {
-			PrintWriter pw = new PrintWriter("syncTestOutput.txt");
-			pw.write(""); pw.close(); //should clear the file?
+			URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
+			PrintWriter pw = new PrintWriter(location.getFile()+"src/synctest/testing/syncTestOutput.txt");
+			pw.write(""); pw.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 
+	
+	public void exportResults(String path) {
+		// Print the result vector to a text file
+		String allResults = "";
+		for(int i = 0; i < results.size(); i++) {
+			allResults += results.get(i).toString();
+		}
+		
+		try {
+			PrintWriter writer = new PrintWriter(path, "UTF-8");
+			writer.println(allResults);
+			writer.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 	public void setFocus() {}
 }

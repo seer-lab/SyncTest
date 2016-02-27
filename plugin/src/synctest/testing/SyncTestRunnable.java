@@ -5,10 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
-import java.util.Vector;
-
-import synctest.util.Parser;
-import synctest.util.Result;
+import java.net.URL;
 
 public class SyncTestRunnable implements Runnable {
 	SyncTestRunner runner;
@@ -26,18 +23,21 @@ public class SyncTestRunnable implements Runnable {
 		double sleepAmnt = runner.getSleepAmnt();
 				
 		try {
+			// Create a process builder for running the shell script
 			ProcessBuilder pb = new ProcessBuilder("/bin/bash", "synctest.sh", baseDir, sourceDir, testDir, 
 					Integer.toString(runCount), Double.toString(sleepAmnt));
 			
-			pb.directory(new File("/home/katarn/Documents/synctest/plugin/src/synctest")); // can't be hardcoded!!
+			URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
+			pb.directory(new File(location.getFile()+"src/synctest"));
 			Process p = pb.start();
 			
 			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
 			
+			// Collect output from the shell script, write it to the output file
 			while ((line = br.readLine()) != null) {
-				BufferedWriter bw = new BufferedWriter(new FileWriter("syncTestOutput.txt", true));
-				//System.out.println("Writing: " + line);
+				BufferedWriter bw = new BufferedWriter(new FileWriter(
+						location.getFile()+"src/synctest/testing/syncTestOutput.txt", true));
 				bw.append(line+"\n");
 				bw.close();
 			}
@@ -46,21 +46,5 @@ public class SyncTestRunnable implements Runnable {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-
-		Vector<Result> results = new Vector<Result>();
-		Parser parser = new Parser();
-		// parse the output
-		File outDir = new File(baseDir+"/out");
-		File[] files = outDir.listFiles();
-		if(files != null) {
-			for(File file : files) {
-				if(file.toString().contains("all")) {
-					Result result = parser.parse(file, runCount);
-					results.add(result);
-				}
-			}
-		}
-		
-		runner.setResults(results);
 	}
 }

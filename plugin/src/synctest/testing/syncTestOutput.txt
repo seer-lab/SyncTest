@@ -1,0 +1,126 @@
+-----------VARS-----------
+BASE_DIR: /home/katarn/Documents/synctest/account
+PATH_TO_SRC: /home/katarn/Documents/synctest/account/src
+PATH_TO_TST: /home/katarn/Documents/synctest/account/tests
+PATH_TO_OUT: /home/katarn/Documents/synctest/account/out
+LOOP_COUNT : 20
+SLEEP AMNT : 0.6
+--------------------------
+Running: Test100
+Execution 1/20: Passed
+Execution 2/20: Passed
+Execution 3/20: Passed
+Execution 4/20: Passed
+Execution 5/20: Passed
+Execution 6/20: Passed
+Execution 7/20: Passed
+Execution 8/20: Failed
+Execution 9/20: Passed
+Execution 10/20: Passed
+Execution 11/20: Passed
+Execution 12/20: Passed
+Execution 13/20: Passed
+Execution 14/20: Passed
+Execution 15/20: Passed
+Execution 16/20: Passed
+Execution 17/20: Passed
+Execution 18/20: Passed
+Execution 19/20: Passed
+Execution 20/20: Passed
+Test100 Completed
+Running: Test10
+Execution 1/20: Passed
+Execution 2/20: Passed
+Execution 3/20: Passed
+Execution 4/20: Passed
+Execution 5/20: Passed
+Execution 6/20: Passed
+Execution 7/20: Passed
+Execution 8/20: Passed
+Execution 9/20: Passed
+Execution 10/20: Failed
+Execution 11/20: Passed
+Execution 12/20: Passed
+Execution 13/20: Failed
+Execution 14/20: Passed
+Execution 15/20: Passed
+Execution 16/20: Passed
+Execution 17/20: Passed
+Execution 18/20: Passed
+Execution 19/20: Passed
+Execution 20/20: Passed
+Test10 Completed
+Running: Test10K
+Execution 1/20: Passed
+Execution 2/20: Passed
+Execution 3/20: Passed
+Execution 4/20: Passed
+Execution 5/20: Passed
+Execution 6/20: Passed
+Execution 7/20: Passed
+Execution 8/20: Passed
+Execution 9/20: Passed
+Execution 10/20: Passed
+Execution 11/20: Passed
+Execution 12/20: Failed
+Execution 13/20: Passed
+Execution 14/20: Passed
+Execution 15/20: Passed
+Execution 16/20: Passed
+Execution 17/20: Passed
+Execution 18/20: Passed
+Execution 19/20: Failed
+Execution 20/20: Passed
+Test10K Completed
+Running: Test15K
+Execution 1/20: Passed
+Execution 2/20: Passed
+Execution 3/20: Passed
+Execution 4/20: Passed
+Execution 5/20: Passed
+Execution 6/20: Passed
+Execution 7/20: Passed
+Execution 8/20: Passed
+Execution 9/20: Passed
+Execution 10/20: Passed
+Execution 11/20: Passed
+Execution 12/20: Passed
+Execution 13/20: Passed
+Execution 14/20: Passed
+Execution 15/20: Passed
+Execution 16/20: Failed
+Execution 17/20: Failed
+Execution 18/20: Passed
+Execution 19/20: Passed
+Execution 20/20: Passed
+Test15K Completed
+Running: Test1K
+Execution 1/20: Passed
+Execution 2/20: Passed
+Execution 3/20: Passed
+Execution 4/20: Passed
+Execution 5/20: Passed
+Execution 6/20: Passed
+Execution 7/20: Passed
+Execution 8/20: Passed
+Execution 9/20: Failed
+Execution 10/20: Passed
+Execution 11/20: Passed
+Execution 12/20: Passed
+Execution 13/20: Passed
+Execution 14/20: Passed
+Execution 15/20: Passed
+Execution 16/20: Passed
+Execution 17/20: Passed
+Execution 18/20: Passed
+Execution 19/20: Passed
+Execution 20/20: Passed
+Test1K Completed
+Running: Test2
+Execution 1/20: Deadlocked
+Execution 2/20: Deadlocked
+Execution 3/20: Deadlocked
+Execution 4/20: Passed
+Execution 5/20: Deadlocked
+Execution 6/20: Passed
+Execution 7/20: Deadlocked

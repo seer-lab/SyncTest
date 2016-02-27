@@ -1,12 +1,7 @@
 package synctest.testing;
 
-import java.util.Vector;
-
-import synctest.util.Result;
-
 public class SyncTestRunner {
 
-	private Vector<Result> results;
 	private String baseDir, sourceDir, testDir;
 	private double sleepAmnt;
 	private int runCount;
@@ -17,14 +12,6 @@ public class SyncTestRunner {
 		this.testDir = test;
 		this.sleepAmnt = Double.valueOf(sleep);
 		this.runCount = Integer.valueOf(runs);
-	}
-	
-	public Vector<Result> getResults() {
-		return results;
-	}
-	
-	public void setResults(Vector<Result> results) {
-		this.results = results;
 	}
 	
 	public String getBaseDir() {
