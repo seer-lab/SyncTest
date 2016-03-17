@@ -16,6 +16,7 @@ import java.nio.file.StandardCopyOption;
 public class SyncTestRunnable implements Runnable {
 	SyncTestRunner 	runner;
 	String 			baseDir, sourceDir, testDir, workingDir, os, cmd, arg;
+	String[]		java, cmdString;
 	int 			runCount;
 	double 			sleepAmnt;
 	URL 			location;
@@ -35,11 +36,15 @@ public class SyncTestRunnable implements Runnable {
 		// set the compilation/run commands based on the operating system
 		// I'm like 99% sure this works
 		if(os.contains("win")) {
-			cmd = "start";
-			arg = "/b";
+			cmd = "cmd";
+			arg = "/c";
+			java = getCommandPaths("win");
+			cmdString = new String[]{"\""+java[1]+"\"","-cp", "junit-4.12.jar;hamcrest-core-1.3.jar;"+workingDir, "org.junit.runner.JUnitCore"};
 		} else if(os.contains("lin") || os.contains("mac")) {
 			cmd = "bash";
 			arg = "-c";
+			java = getCommandPaths("lin");
+			cmdString = new String[]{java[1],"-cp", "junit-4.12.jar:hamcrest-core-1.3.jar:.", "org.junit.runner.JUnitCore"};
 		} else {
 			System.out.println("OS Not Supported! Sorry.");
 			System.exit(-1);
@@ -71,7 +76,17 @@ public class SyncTestRunnable implements Runnable {
 			if(packTest == null) {
 				workingDir = baseDir;
 			} else {
-				workingDir = baseDir+"/..";
+				if(os.contains("win")) {
+					workingDir = baseDir+"\\..";
+				} else {
+					workingDir = baseDir+"/..";
+				}
+			}
+			
+			if(os.contains("win")) {
+				cmdString = new String[]{"\""+java[1]+"\"","-cp", "junit-4.12.jar;hamcrest-core-1.3.jar;"+workingDir, "org.junit.runner.JUnitCore"};
+			} else if(os.contains("lin") || os.contains("mac")) {
+				cmdString = new String[]{java[1],"-cp", "junit-4.12.jar:hamcrest-core-1.3.jar:.", "org.junit.runner.JUnitCore"};
 			}
 			
 			// copy jar files to the working directory
@@ -87,7 +102,7 @@ public class SyncTestRunnable implements Runnable {
 			Files.copy(moveFrom,  moveTo, StandardCopyOption.REPLACE_EXISTING);
 			
 			// compile all source and test files
-			ProcessBuilder compile = new ProcessBuilder(cmd, arg, "javac -cp "+junit.getName()+" "+sourceDir+"/*.java "+testDir+"/*.java");
+			ProcessBuilder compile = new ProcessBuilder(cmd, arg, "\""+java[0]+"\" -cp junit-4.12.jar "+sourceDir+"/*.java "+testDir+"/*.java");
 			compile.directory(new File(workingDir));
 			Process compileProc = compile.start();
 			
@@ -109,8 +124,7 @@ public class SyncTestRunnable implements Runnable {
 				
 				for(int i = 1; i <= runCount; i++) {
 					if(Thread.currentThread().isInterrupted()) break outerLoop;
-					ProcessBuilder run = new ProcessBuilder(
-							"java","-cp", junit.getName()+":"+hamcrest.getName()+":.", "org.junit.runner.JUnitCore", pack+"."+test);
+					ProcessBuilder run = new ProcessBuilder(cmd, arg, "\""+cmdString[0]+"\"", cmdString[1], cmdString[2], cmdString[3], pack+"."+test);
 					
 					run.directory(new File(workingDir));
 					
@@ -171,6 +185,45 @@ public class SyncTestRunnable implements Runnable {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public String[] getCommandPaths(String os) {
+		try {
+			if(os.equals("win")) {
+				Process where = (new ProcessBuilder("where", "javac")).start();
+				BufferedReader br = new BufferedReader(new InputStreamReader(where.getInputStream()));
+				String javac = br.readLine();
+				br.close();
+				where.destroy();
+				
+				where = (new ProcessBuilder("where", "java")).start();
+				br = new BufferedReader(new InputStreamReader(where.getInputStream()));
+				String java = br.readLine();
+				br.close();
+				where.destroy();
+				
+				return new String[] {javac, java};
+			} else if(os.equals("lin")) {
+				Process which = (new ProcessBuilder("which", "javac")).start();
+				BufferedReader br = new BufferedReader(new InputStreamReader(which.getInputStream()));
+				String javac = br.readLine();
+				br.close();
+				which.destroy();
+				
+				which = (new ProcessBuilder("which", "java")).start();
+				br = new BufferedReader(new InputStreamReader(which.getInputStream()));
+				String java = br.readLine();
+				br.close();
+				which.destroy();
+				
+				return new String[] {javac, java};
+			} else {
+				return null;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public String getPackageName(File file) {

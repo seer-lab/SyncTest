@@ -1,18 +1,40 @@
+Running: Test10
+Execution 1/3 Passed
+Execution 2/3 Passed
+Execution 3/3 Passed
+Test10 Completed
+Running: Test100
+Execution 1/3 Passed
+Execution 2/3 Passed
+Execution 3/3 Passed
+Test100 Completed
+Running: Test10K
+Execution 1/3 Passed
+Execution 2/3 Passed
+Execution 3/3 Passed
+Test10K Completed
+Running: Test15K
+Execution 1/3 Passed
+Execution 2/3 Passed
+Execution 3/3 Passed
+Test15K Completed
+Running: Test1K
+Execution 1/3 Passed
+Execution 2/3 Passed
+Execution 3/3 Failed
+Test1K Completed
 Running: Test2
-Execution 1/15 Passed
-Execution 2/15 Passed
-Execution 3/15 Passed
-Execution 4/15 Passed
-Execution 5/15 Passed
-Execution 6/15 Deadlocked
-Execution 7/15 Passed
-Execution 8/15 Failed
-Execution 9/15 Passed
-Execution 10/15 Passed
-Execution 11/15 Passed
-Execution 12/15 Passed
-Execution 13/15 Passed
-Execution 14/15 Passed
-Execution 15/15 Passed
+Execution 2/3 Passed
+Execution 3/3 Failed
 Test2 Completed
+Running: Test50K
+Execution 1/3 Passed
+Execution 2/3 Passed
+Execution 3/3 Passed
+Test50K Completed
+Running: Test5K
+Execution 1/3 Passed
+Execution 2/3 Passed
+Execution 3/3 Passed
+Test5K Completed
 all tests finished

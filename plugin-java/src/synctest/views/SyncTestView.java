@@ -382,7 +382,7 @@ public class SyncTestView extends ViewPart {
 		execProgress.setSelection(0);
 
 		Label passed = new Label(tests, SWT.NULL);
-		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_CENTER);
+		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
 		passed.setLayoutData(gridData);
 		passed.setText("Passes:");
 
@@ -409,7 +409,7 @@ public class SyncTestView extends ViewPart {
 		});
 
 		Label failed = new Label(tests, SWT.NULL);
-		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_CENTER);
+		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
 		failed.setLayoutData(gridData);
 		failed.setText("Failures:");
 
@@ -437,7 +437,7 @@ public class SyncTestView extends ViewPart {
 		});
 
 		Label errorLbl = new Label(tests, SWT.NULL);
-		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_CENTER);
+		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
 		errorLbl.setLayoutData(gridData);
 		errorLbl.setText("Errors:");
 
@@ -465,7 +465,7 @@ public class SyncTestView extends ViewPart {
 		});
 
 		Label deadlocked = new Label(tests, SWT.NULL);
-		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_CENTER);
+		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
 		deadlocked.setLayoutData(gridData);
 		deadlocked.setText("Deadlocks:");
 
