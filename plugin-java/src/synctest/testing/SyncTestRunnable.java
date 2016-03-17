@@ -3,6 +3,7 @@ package synctest.testing;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.InputStreamReader;
@@ -14,7 +15,7 @@ import java.nio.file.StandardCopyOption;
 
 public class SyncTestRunnable implements Runnable {
 	SyncTestRunner 	runner;
-	String 			baseDir, sourceDir, testDir, workingDir, javac, java, os;
+	String 			baseDir, sourceDir, testDir, workingDir, os, cmd, arg;
 	int 			runCount;
 	double 			sleepAmnt;
 	URL 			location;
@@ -34,14 +35,11 @@ public class SyncTestRunnable implements Runnable {
 		// set the compilation/run commands based on the operating system
 		// I'm like 99% sure this works
 		if(os.contains("win")) {
-			javac = "javac.exe";
-			java = "java.exe";
-		} else if(os.contains("lin")) {
-			javac = "/usr/bin/javac";
-			java = "/usr/bin/java";
-		} else if(os.contains("mac")) {
-			javac = "/usr/bin/javac";
-			java = "/usr/bin/java";
+			cmd = "start";
+			arg = "/b";
+		} else if(os.contains("lin") || os.contains("mac")) {
+			cmd = "bash";
+			arg = "-c";
 		} else {
 			System.out.println("OS Not Supported! Sorry.");
 			System.exit(-1);
@@ -69,11 +67,11 @@ public class SyncTestRunnable implements Runnable {
 			
 			// check for a package and set the working directory accordingly
 			// TODO fix hard-coding of working directory
-			String packTest = testFiles[0].getClass().getPackage().getName();
-			if(packTest.isEmpty()) {
+			String packTest = getPackageName(testFiles[0]);
+			if(packTest == null) {
 				workingDir = baseDir;
 			} else {
-				workingDir = "/home/katarn/Documents/synctest/";
+				workingDir = baseDir+"/..";
 			}
 			
 			// copy jar files to the working directory
@@ -89,8 +87,7 @@ public class SyncTestRunnable implements Runnable {
 			Files.copy(moveFrom,  moveTo, StandardCopyOption.REPLACE_EXISTING);
 			
 			// compile all source and test files
-			// TODO find out why compilation doesn't work
-			ProcessBuilder compile = new ProcessBuilder(javac, "-cp", junit.getName(), sourceDir+"/*.java", testDir+"/*.java");
+			ProcessBuilder compile = new ProcessBuilder(cmd, arg, "javac -cp "+junit.getName()+" "+sourceDir+"/*.java "+testDir+"/*.java");
 			compile.directory(new File(workingDir));
 			Process compileProc = compile.start();
 			
@@ -101,9 +98,7 @@ public class SyncTestRunnable implements Runnable {
 			outerLoop:
 			for(int t = 0; t < testFiles.length; t++) {
 				if(Thread.currentThread().isInterrupted()) break;
-				// TODO get the package name
-				//String pack = testFiles[t].getClass().getPackage().getName();
-				String pack = "account.tests";
+				String pack = getPackageName(testFiles[t]);
 				String test = testFiles[t].getName().split("\\.")[0];
 				
 				// Write to file so UI thread can read it
@@ -114,28 +109,28 @@ public class SyncTestRunnable implements Runnable {
 				
 				for(int i = 1; i <= runCount; i++) {
 					if(Thread.currentThread().isInterrupted()) break outerLoop;
-					// TODO implement deadlock detection
-					checkDeadlock = new Thread(new CheckDeadlock(outDir.toString(), test, i, runCount, sleepAmnt));
 					ProcessBuilder run = new ProcessBuilder(
-							java,"-cp", junit.getName()+":"+hamcrest.getName()+":.", "org.junit.runner.JUnitCore", pack+"."+test);
-					
-					checkDeadlock.start();
+							"java","-cp", junit.getName()+":"+hamcrest.getName()+":.", "org.junit.runner.JUnitCore", pack+"."+test);
 					
 					run.directory(new File(workingDir));
 					
-					// start the process for running the test
+					// start the process for running the test as well as the deadlock detection process
 					Process runProc = run.start();
+					checkDeadlock = new Thread(new CheckDeadlock(outDir.toString(), test, i, runCount, sleepAmnt, runProc));
+					checkDeadlock.start();
 					BufferedReader br = new BufferedReader(new InputStreamReader(runProc.getInputStream()));
 					String line;
 
 					bw2 = new BufferedWriter(new FileWriter(outDir+"/"+test+"-"+i+".txt"));
 					bw2.append("<"+test+" -- "+i+">");
+					bw2.close();
 					
 					// get the output for the test and write it to the output file
 					while ((line = br.readLine()) != null) {
 						if(Thread.currentThread().isInterrupted()) break outerLoop; // user has pressed the cancel button
 						
 						bw = new BufferedWriter(new FileWriter(location.getFile()+"src/synctest/testing/syncTestOutput.txt", true));
+						bw2 = new BufferedWriter(new FileWriter(outDir+"/"+test+"-"+i+".txt", true));
 						bw2.append(line+"\n");
 						
 						// if a deadlock is found it will get written to the output file by the checkDeadlock thread
@@ -146,9 +141,8 @@ public class SyncTestRunnable implements Runnable {
 						}
 						
 						bw.close();
+						bw2.close();
 					}
-
-					bw2.close();
 					
 					// wait until the test is finished before moving on
 					runProc.waitFor();
@@ -177,5 +171,27 @@ public class SyncTestRunnable implements Runnable {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public String getPackageName(File file) {
+		// check beginning of a file for a package name
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			int i = 0; String line;
+			while((line = br.readLine()) != null && i < 50) {
+				i++;
+				if(line.contains("package")) {
+					String pack = line.split(" ")[1];
+					pack = pack.substring(0,  pack.length()-1);
+					br.close();
+					return pack;
+				}
+			}
+			br.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 }

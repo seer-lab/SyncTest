@@ -559,7 +559,7 @@ public class SyncTestView extends ViewPart {
 		
 		Group executions = new Group(testResults, SWT.NULL);
 		executions.setText("Select an execution to view raw output:");
-		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData = new GridData(GridData.FILL_BOTH);
 		gridData.horizontalSpan = 8;
 		executions.setLayoutData(gridData);
 		executions.setLayout(new GridLayout(1, false));

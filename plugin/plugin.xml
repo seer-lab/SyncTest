@@ -6,7 +6,7 @@
          point="org.eclipse.ui.views">
       <category
             name="Concurrency"
-            id="SyncTest">
+            id="SyncTest (Bash)">
       </category>
       <view
             name="SyncTest"
