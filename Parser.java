@@ -53,10 +53,10 @@ public class Parser {
 			}
 
       	double percent = ((double) passCount/(double) testsRun)*100;
-			System.out.println(" Tests Run:\t" + testsRun);
-			System.out.println("    Passed:\t" + passCount);
-			System.out.println("    Failed:\t" + failCount);
-			System.out.println("Deadlocked:\t" + (testsRun - (failCount+passCount)));
+			System.out.println("Tests Run: " + testsRun);
+			System.out.println("Passed: " + passCount);
+			System.out.println("Failed: " + failCount);
+			System.out.println("Deadlocked: " + (testsRun - (failCount+passCount)));
 
 //			if(failCount > 0) {
 //				System.out.println("=====ERRORS=====");

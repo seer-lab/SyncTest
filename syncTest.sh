@@ -46,7 +46,7 @@ echo "LOOP_COUNT : $LOOP_COUNT"
 echo "--------------------------"
 
 # compile all source and test files, as well as the parser
-javac -cp junit-4.12.jar $PATH_TO_SRC/*.java $PATH_TO_TST/*.java Parser.java
+javac -cp jar/junit-4.12.jar $PATH_TO_SRC/*.java $PATH_TO_TST/*.java Parser.java
 
 # convert format from account/tests to account.test (for running tests)
 RUN_TEST=$(echo "$PATH_TO_TST" | tr / .)
@@ -64,7 +64,7 @@ do
         csh checkDeadlock.sh $t $PATH_TO_OUT/$t-$i.txt &
 
         # run test and redirect output to text file
-        java -cp junit-4.12.jar:hamcrest-core-1.3.jar:. org.junit.runner.JUnitCore $RUN_TEST.$t > $PATH_TO_OUT/$t-$i.txt
+        java -cp jar/junit-4.12.jar:jar/hamcrest-core-1.3.jar:. org.junit.runner.JUnitCore $RUN_TEST.$t > $PATH_TO_OUT/$t-$i.txt
 
         # print status of each test
         if (grep --quiet OK $PATH_TO_OUT/$t-$i.txt) then

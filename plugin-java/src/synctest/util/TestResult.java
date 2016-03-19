@@ -2,21 +2,39 @@ package synctest.util;
 
 import java.util.Vector;
 
+/**
+ * A storage class for a set of test results
+ * 
+ * @author Alexander Marshall
+ * */
 public class TestResult {
-	private String name, raw;
+	private String name;
 	private double pass, fail, error, deadlock, total;
 	private Vector<ExecutionResult> executionResults;
 
-	public TestResult(String name, double pass, double fail, double error, double deadlock, double total, String raw) {
+	/**
+	 * An older version of the constructor that is no longer used
+	 * 
+	 * @param name 		The test class
+	 * @param pass		The amount of executions that passed
+	 * @param fail		The amount of executions that failed
+	 * @param error		The amount of executions that resulted in an error
+	 * @param deadlock	The amount of executions that deadlocked
+	 * @param total		The total amount of executions*/
+	public TestResult(String name, double pass, double fail, double error, double deadlock, double total) {
 		this.name = name;
 		this.pass = pass;
 		this.fail = fail;
 		this.error = error;
 		this.deadlock = deadlock;
 		this.total = total;
-        this.raw = raw;
 	}
 	
+	/**
+	 * The constructor for the class
+	 * 
+	 * @param name				The test class
+	 * @param executionResults	A vector containing each execution result*/
 	public TestResult(String name, Vector<ExecutionResult> executionResults) {
 		this.name = name;
 		this.executionResults = executionResults;
@@ -36,6 +54,10 @@ public class TestResult {
 		}
 	}
 	
+	/**
+	 * Store the results in a string
+	 * 
+	 * @return 		A string containing this tests results*/
 	public String toString() {
 		String result = 
 				"Test: " 	 + name 	 	 + "\n" +
@@ -48,6 +70,9 @@ public class TestResult {
 		return result;
 	}
 	
+	/**
+	 * Prints this tests results
+	 * */
 	public void printResult() {
 		System.out.println("Test: " 	+ name);
 		System.out.println("Pass: " 	+ (int)pass);
@@ -57,35 +82,52 @@ public class TestResult {
 		System.out.println("Total: " 	+ (int)total);
 	}
 
+	/**
+	 * @return 		The test name
+	 * */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * @return 		A vector containing execution results
+	 * */
 	public Vector<ExecutionResult> getExecutionResults() {
 		return this.executionResults;
 	}
 	
+	/**
+	 * @return 		The amount of executions that passed
+	 * */
 	public double getPass() {
 		return pass;
 	}
 	
+	/**
+	 * @return 		The amount of executions that failed
+	 * */
 	public double getFail() {
 		return fail;
 	}
-	
+
+	/**
+	 * @return 		The amount of executions that resulted in an error
+	 * */
 	public double getError() {
 		return error;
 	}
 	
+	/**
+	 * @return 		The amount of executions that deadlocked
+	 * */
 	public double getDeadlock() {
 		return deadlock;
 	}
 	
+	/**
+	 * @return 		The total amount of executions
+	 * */
 	public double getTotal() {
 		return total;
-	}
-    
-	public String getRaw() {
-		return raw;
 	}
 }
